@@ -1,0 +1,3 @@
+rootProject.name = "cDroneApp"
+include ':app'
+include ':android-sdk-v5-uxsdk'
