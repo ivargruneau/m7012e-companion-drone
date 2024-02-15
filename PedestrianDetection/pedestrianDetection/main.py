@@ -5,7 +5,8 @@ import cv2
 model = YOLO('yolov8n.pt')
 
 # load video
-video_path = './yellowcat.mp4'
+#video_path = './yellowcat.mp4'
+video_path = './testVideos/vid_6.mp4'
 cap = cv2.VideoCapture(video_path)
 
 ret = True
