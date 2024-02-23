@@ -3,14 +3,12 @@ package com.example.cdroneapp
 import android.app.Application
 import android.content.Context
 import android.util.Log
-import android.widget.Button
-import android.widget.TextView
+import com.example.cdroneapp.utils.FPVDemoApplication
+import dji.v5.common.callback.CommonCallbacks.CompletionCallback
 import dji.v5.common.error.IDJIError
 import dji.v5.common.register.DJISDKInitEvent
 import dji.v5.manager.SDKManager
 import dji.v5.manager.interfaces.SDKManagerCallback
-import dji.v5.manager.aircraft.perception.data.ObstacleData
-import dji.v5.manager.aircraft.perception.listener.ObstacleDataListener
 
 
 class MyApplication : Application() {
@@ -67,7 +65,11 @@ class MyApplication : Application() {
     }
     fun getStatusMessage() : String {
         return statusString
+
     }
+
+
+
 
 
 }

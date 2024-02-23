@@ -6,6 +6,20 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.example.cdroneapp.R
+import androidx.lifecycle.MutableLiveData
+
+import dji.sdk.keyvalue.key.CameraKey
+import dji.sdk.keyvalue.key.KeyTools
+import dji.sdk.keyvalue.key.KeyTools.createKey
+
+import dji.sdk.keyvalue.value.camera.CameraMode
+import dji.sdk.keyvalue.value.common.ComponentIndexType
+import dji.v5.common.callback.CommonCallbacks
+import dji.v5.common.error.IDJIError
+import dji.v5.common.error.RxError
+import dji.v5.common.utils.CallbackUtils
+import dji.v5.common.utils.RxUtil
+
 
 class SetPedestrianActivity : AppCompatActivity() {
 
@@ -30,4 +44,17 @@ class SetPedestrianActivity : AppCompatActivity() {
             finish()
         }
     }
+    fun takePhoto(callback: CommonCallbacks.CompletionCallback) {
+        val ttt = RxUtil.setValue(createKey<CameraMode>(
+            CameraKey.KeyCameraMode), CameraMode.PHOTO_NORMAL)
+            .andThen(RxUtil.performActionWithOutResult(createKey(CameraKey.KeyStartShootPhoto)))
+            .subscribe({ CallbackUtils.onSuccess(callback) }
+            ) { throwable: Throwable ->
+                CallbackUtils.onFailure(
+                    callback,
+                    (throwable as RxError).djiError
+                )
+            }
+    }
+
 }
