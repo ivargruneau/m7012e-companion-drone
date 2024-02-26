@@ -57,16 +57,16 @@ class MainActivity : AppCompatActivity() {
 
 
         button2.setOnClickListener {
-            mediaVM.captureAndRetrivePhoto()
-
+            mediaVM.capturePhoto()
             //increment(textView2)
             //beginPhoto()
 
         }
         button3.setOnClickListener {
 
-            mediaList = mediaVM.getMediaFileList()
-            textView3.text = mediaList.size.toString()
+            //mediaList = mediaVM.getMediaFileList()
+            //textView3.text = mediaList.size.toString()
+            textView3.text = mediaVM.getFileStatus()
 
         }
         button4.setOnClickListener {
