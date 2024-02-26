@@ -28,6 +28,7 @@ while ret:
             break
 
 
+
 def detect_faces(image):
     # Load the pre-trained Haar Cascade face detector
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -49,5 +50,6 @@ def detect_faces(image):
             actual_faces.append((x, y, w, h))
 
     return actual_faces
+
 
 
