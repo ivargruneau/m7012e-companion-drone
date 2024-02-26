@@ -74,7 +74,8 @@ def calculate_distance_to_camera(known_width, focal_length, pixel_width, boundin
     return distance, turning, moving, elevation
 
 # Load the video file
-video_path = 'IMG_1193.mp4'
+#video_path = 'IMG_1193.mp4'
+video_path = './PedestrianDetection/pedestrianDetection/testVideos/vid_6.mp4'
 video_capture = cv2.VideoCapture(video_path)
 
 # Known parameters for calibration (in inches)
