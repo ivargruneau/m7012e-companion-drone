@@ -50,7 +50,9 @@ class MediaVM() {
         }
 
     }
-
+    fun getLenOfmediaFileIndex() : String{
+        return getMediaFileList().size.toString()
+    }
     fun destroy() {
         KeyManager.getInstance().cancelListen(this);
         removeAllFileListStateListener()
@@ -99,6 +101,7 @@ class MediaVM() {
             MediaFileListStateListener {
             override fun onUpdate(mediaFileListState: MediaFileListState) {
                 fileListState.postValue(mediaFileListState)
+
             }
 
         })
@@ -214,6 +217,7 @@ class MediaVM() {
                 pullMediaFileListFromCamera(-1, -1)
                 var media = getMediaFileList()[0]
                 downloadFile(media )
+
             }
 
             override fun onFailure(error: IDJIError) {
