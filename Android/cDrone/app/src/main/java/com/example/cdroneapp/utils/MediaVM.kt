@@ -77,6 +77,23 @@ class MediaVM() {
             })
     }
 
+    public fun clearMediaFileListFromCamera() {
+        //var mediaList : List<MediaFile>
+        pullMediaFileListFromCamera(-1, -1)
+        var mediaList = getMediaFileList()
+        MediaDataCenter.getInstance().mediaManager.deleteMediaFiles(mediaList, object :
+            CommonCallbacks.CompletionCallback {
+            override fun onSuccess() {
+
+            }
+
+            override fun onFailure(error: IDJIError) {
+
+            }
+
+        })
+    }
+
     private fun addMediaFileListStateListener() {
         MediaDataCenter.getInstance().mediaManager.addMediaFileListStateListener(object :
             MediaFileListStateListener {
@@ -191,6 +208,20 @@ class MediaVM() {
             }
     }
 
+    fun captureAndRetrivePhoto() {
+        takePhoto(object : CommonCallbacks.CompletionCallback {
+            override fun onSuccess() {
+                pullMediaFileListFromCamera(-1, -1)
+                var media = getMediaFileList()[0]
+                downloadFile(media )
+            }
+
+            override fun onFailure(error: IDJIError) {
+
+
+            }
+        })
+    }
     fun  downloadMediaFile(mediaList: List<MediaFile>){
         mediaList.forEach {
             downloadFile(it)

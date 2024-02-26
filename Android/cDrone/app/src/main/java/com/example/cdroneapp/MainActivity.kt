@@ -4,11 +4,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-
+import android.app.Activity
+import android.content.Intent
 
 import dji.v5.common.callback.CommonCallbacks
 import dji.v5.common.error.IDJIError
 import com.example.cdroneapp.utils.MediaVM
+import com.example.cdroneapp.utils.SetupHandler
 import dji.v5.manager.datacenter.media.MediaFile
 
 
@@ -34,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         button1 = findViewById<Button>(R.id.button1)
+        button1.text = "Start Setup"
         textView1 = findViewById<TextView>(R.id.textView1)
         button2 = findViewById<Button>(R.id.button2)
         textView2 = findViewById<TextView>(R.id.textView2)
@@ -45,12 +48,17 @@ class MainActivity : AppCompatActivity() {
         mediaVM.init()
 
 
+
         myApp = application as MyApplication
         button1.setOnClickListener {
-            textView1.text = "Status msg: " + myApp.getStatusMessage()
+            val intent = Intent(this, SetupHandler::class.java)
+            startActivityForResult(intent, SETUP_ACTIVITY_REQUEST_CODE)
+            // Assuming you renamed SecondActivity to SetPedestrianActivity, this should be SetPedestrianActivity::class.java
+
 
 
         }
+
 
         button2.setOnClickListener {
             //increment(textView2)
@@ -87,6 +95,20 @@ class MainActivity : AppCompatActivity() {
 
 
 
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == SETUP_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                val result = data?.getStringExtra("result")
+                //newMessage = result ?: ""
+                // Use newMessage as needed
+            }
+        }
+    }
+    companion object {
+        private const val SETUP_ACTIVITY_REQUEST_CODE = 0 // Declaration of the request code
     }
     fun beginPhoto(){
         mediaVM.takePhoto(object : CommonCallbacks.CompletionCallback {

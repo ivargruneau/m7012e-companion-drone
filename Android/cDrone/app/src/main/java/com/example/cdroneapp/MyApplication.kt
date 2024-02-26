@@ -3,8 +3,6 @@ package com.example.cdroneapp
 import android.app.Application
 import android.content.Context
 import android.util.Log
-import com.example.cdroneapp.utils.FPVDemoApplication
-import dji.v5.common.callback.CommonCallbacks.CompletionCallback
 import dji.v5.common.error.IDJIError
 import dji.v5.common.register.DJISDKInitEvent
 import dji.v5.manager.SDKManager
@@ -29,6 +27,7 @@ class MyApplication : Application() {
                 Log.i(TAG, "onInitProcess: ")
                 if (event == DJISDKInitEvent.INITIALIZE_COMPLETE) {
                     SDKManager.getInstance().registerApp()
+
                 }
                 else {
                     statusString = "INITIALIZE failed: "
