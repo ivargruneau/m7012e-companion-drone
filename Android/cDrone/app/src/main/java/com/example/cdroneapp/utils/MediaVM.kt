@@ -84,6 +84,7 @@ class MediaVM() {
     fun capturePhoto() {
         takePhoto(object : CommonCallbacks.CompletionCallback {
             override fun onSuccess() {
+                sleep(1000)
                 getMediaFromCamera(0, 1)
             }
 
@@ -101,6 +102,8 @@ class MediaVM() {
                 CommonCallbacks.CompletionCallback {
                 override fun onSuccess() {
                     var mediaList = getMediaFileList()
+                    var a = mediaList.size
+                    var b = a +1
                     downloadFileAndSend(mediaList[0])
 
                 }
@@ -232,6 +235,7 @@ class MediaVM() {
         })
      */
     fun takePhoto(callback: CommonCallbacks.CompletionCallback) {
+
         RxUtil.setValue(createKey<CameraMode>(
             CameraKey.KeyCameraMode), CameraMode.PHOTO_NORMAL)
             .andThen(RxUtil.performActionWithOutResult(createKey(CameraKey.KeyStartShootPhoto)))
@@ -339,7 +343,7 @@ class MediaVM() {
                     LogUtils.e("MediaFile", "close error$error")
                 }
                 latest_file = filepath
-                networkHandler.sendImageToServer("1234", filepath )
+                //networkHandler.sendImageToServer("1234", filepath )
                 LogUtils.i("MediaFile" , "${mediaFile.fileIndex }  download finish"  )
             }
 
@@ -354,4 +358,12 @@ class MediaVM() {
     fun getFileStatus() : String {
         return latest_file
     }
+    fun sleep(milliseconds: Long) {
+        try {
+            Thread.sleep(milliseconds)
+        } catch (e: InterruptedException) {
+            Thread.currentThread().interrupt()
+        }
+    }
+
 }

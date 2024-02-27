@@ -1,17 +1,18 @@
 package com.example.cdroneapp.utils
-
 import okhttp3.*
 import java.io.File
 import java.io.IOException
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.asRequestBody
 
 class NetworkHandler {
-    private var serverUrl = "test"
     public fun sendImageToServer(sessionId: String, filePath: String) {
         val client = OkHttpClient()
-
-        // Create RequestBody for the image file
         val file = File(filePath)
-        val fileBody = RequestBody.create(MediaType.parse("image/jpeg"), file)
+
+        // Updated way to get MediaType and create RequestBody
+        val mediaType = "image/jpeg".toMediaTypeOrNull()
+        val fileBody = file.asRequestBody(mediaType)
 
         // Create multipart body
         val requestBody = MultipartBody.Builder()
@@ -22,7 +23,7 @@ class NetworkHandler {
 
         // Build the request
         val request = Request.Builder()
-            .url(serverUrl)
+            .url("YOUR_ENDPOINT_URL")
             .post(requestBody)
             .build()
 
@@ -38,14 +39,11 @@ class NetworkHandler {
                     // Handle error
                 } else {
                     // Handle success
-                    val responseBody = response.body()?.string()
+                    val responseBody = response.body?.string()
                     // Do something with the response
                 }
             }
         })
     }
-
-    private fun handleResponse(){
-
-    }
 }
+

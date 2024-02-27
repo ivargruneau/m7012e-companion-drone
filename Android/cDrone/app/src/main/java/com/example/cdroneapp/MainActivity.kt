@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         button1.setOnClickListener {
 
             textView1.text = myApp.getStatusMessage()
-            mediaVM.pullMediaFileListFromCamera(-1, -1)
+            //mediaVM.pullMediaFileListFromCamera(-1, -1)
 
 
         }
