@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
         textView4 = findViewById<TextView>(R.id.textView4)
         mediaVM = MediaVM()
         mediaVM.init()
+        button2.text = "Take Photo"
 
 
 

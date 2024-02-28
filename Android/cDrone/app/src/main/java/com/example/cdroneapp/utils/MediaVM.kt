@@ -85,7 +85,7 @@ class MediaVM() {
         takePhoto(object : CommonCallbacks.CompletionCallback {
             override fun onSuccess() {
                 sleep(1000)
-                getMediaFromCamera(0, 1)
+                getMediaFromCamera(1, 1)
             }
 
             override fun onFailure(error: IDJIError) {
@@ -343,7 +343,7 @@ class MediaVM() {
                     LogUtils.e("MediaFile", "close error$error")
                 }
                 latest_file = filepath
-                //networkHandler.sendImageToServer("1234", filepath )
+                networkHandler.sendImageToServer("1234", filepath )
                 LogUtils.i("MediaFile" , "${mediaFile.fileIndex }  download finish"  )
             }
 

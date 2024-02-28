@@ -23,7 +23,7 @@ class NetworkHandler {
 
         // Build the request
         val request = Request.Builder()
-            .url("YOUR_ENDPOINT_URL")
+            .url("http://83.233.46.128:4280/upload")
             .post(requestBody)
             .build()
 
