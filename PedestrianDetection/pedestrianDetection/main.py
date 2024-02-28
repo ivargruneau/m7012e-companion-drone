@@ -1,55 +1,43 @@
 from ultralytics import YOLO
 import cv2
 
+
 # load yolov8 model
 model = YOLO('yolov8n.pt')
 
-# load video
-#video_path = './yellowcat.mp4'
-video_path = './PedestrianDetection/pedestrianDetection/testVideos/vid_6.mp4'
-cap = cv2.VideoCapture(video_path)
-image=cap
-ret = True
+# load an image
 
-# read frames
-while ret:
-    ret, frame = cap.read()
-    if ret:
-        # detect objects
-        # track objects
-        results = model.track(frame, persist=True)
-
-        # plot results
-        frame_ = results[0].plot()
-
-        # visualize
-        cv2.imshow('frame', frame_)
-        if cv2.waitKey(25) & 0xFF == ord('q'):
-            break
+image_path = './testVideos/img1.jpg'
+image = cv2.imread(image_path)
 
 
+results_list = model.predict(image) # source already setup
+names = model.names
+print(f' Name: ')
 
-def detect_faces(image):
-    # Load the pre-trained Haar Cascade face detector
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+# Assuming results.pred contains the predictions
+# And results.names contains the class names
+def calc_somthing(x_Upper, y_Upper, x_Lower, y_Lower, image_original_size):
+    print("Inside calc_somthing")
+    print(f'    x_Upper {x_Upper}. y_Upper {y_Upper} x_Lower { x_Lower}. y_Lower {y_Lower}. image_original_size {image_original_size}')
+for results in results_list: #Result seems to be of len 1 only
+    
+    for result in results:
 
-    # Convert the image to grayscale for better face detection
-    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # Detect faces in the grayscale image
-    faces = face_cascade.detectMultiScale(gray_image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+        c = int(result.boxes.cls)
+        if ( c == 0) :
+            pos_array = result.boxes.xyxy .numpy()
+            
 
-    # Filter out detections that are not actual faces
-    actual_faces = []
-    for (x, y, w, h) in faces:
-        # Check if the detected region contains more white pixels than black pixels (likely to be a face)
-        region_of_interest = gray_image[y:y+h, x:x+w]
-        num_white_pixels = cv2.countNonZero(region_of_interest)
-        num_black_pixels = region_of_interest.size - num_white_pixels
-        if num_white_pixels > num_black_pixels:
-            actual_faces.append((x, y, w, h))
-
-    return actual_faces
+            pos_array = pos_array[0]
+            calc_somthing(pos_array[0], pos_array[1], pos_array[2], pos_array[3], "image original dimmensions")
+            
 
 
 
+        
+# Display the image
+cv2.imshow('Detected Objects', image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
