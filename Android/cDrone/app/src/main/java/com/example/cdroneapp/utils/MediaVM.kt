@@ -84,7 +84,7 @@ class MediaVM() {
     fun capturePhoto() {
         takePhoto(object : CommonCallbacks.CompletionCallback {
             override fun onSuccess() {
-                sleep(1000)
+                sleep(750)
                 getMediaFromCamera(1, 1)
             }
 
