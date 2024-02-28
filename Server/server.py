@@ -41,6 +41,7 @@ def upload_file():
             # For demonstration, we'll return dummy values
 
             response_data = {
+                'pedestrianDetected': True,
                 'distance': 1.4561,
                 'horizontalAngle': 102,
                 'verticalAngle': 15.2
