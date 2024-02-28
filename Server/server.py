@@ -10,6 +10,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
+    print("Got a POST Request")
     if request.method == 'POST':
         # Ensure the upload folder exists
         if not os.path.exists(app.config['UPLOAD_FOLDER']):
@@ -45,6 +46,12 @@ def upload_file():
                 'verticalAngle': 15.2
             }
             return jsonify(response_data)
+
+
+@app.route('/get', methods=['GET'])
+def get_test():
+    print("Got a GET Request")
+    return "asdasd"
 
 if __name__ == '__main__':
     app.run(debug=True)
