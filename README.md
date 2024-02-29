@@ -54,7 +54,7 @@ The project's codebase is organized into different directories, each representin
 
 ## YouTube Demo
 
-Stay tuned for a comprehensive demonstration of our project on YouTube. We'll provide the link once it's available.
+🎬 **YouTube Demo:** [Watch on YouTube](https://youtu.)
 
 ## Setup Instructions
 
