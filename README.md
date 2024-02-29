@@ -2,7 +2,12 @@
 
 ## Project Overview
 
-Welcome to the M7012E-Companion-Drone project repository. This project is part of the M7012E course at Luleå University of Technology. Our goal is to develop a highly advanced companion drone equipped with intelligent features to enhance its capabilities in various scenarios.
+## Course Details
+
+- **University:**  Luleå University of Technology
+- **Course Name:**  Pervasive Computing (M7012E) 
+- **Instructor:** Kåre Synnes
+- **Semester/Year:** LP3/2024
 
 ## Project Team
 
