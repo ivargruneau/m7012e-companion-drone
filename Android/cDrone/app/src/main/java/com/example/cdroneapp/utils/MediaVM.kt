@@ -6,12 +6,12 @@ import androidx.lifecycle.MutableLiveData
 import dji.sdk.keyvalue.key.CameraKey
 import dji.sdk.keyvalue.key.KeyTools
 import dji.sdk.keyvalue.key.KeyTools.createKey
-
 import dji.sdk.keyvalue.value.camera.CameraMode
 import dji.sdk.keyvalue.value.common.ComponentIndexType
-import dji.v5.common.callback.CommonCallbacks
+
 import dji.v5.common.error.IDJIError
 import dji.v5.common.error.RxError
+import dji.v5.common.callback.CommonCallbacks
 import dji.v5.common.utils.CallbackUtils
 import dji.v5.common.utils.RxUtil
 import dji.v5.manager.KeyManager
@@ -210,6 +210,7 @@ class MediaVM() {
     }
 
     fun disable() {
+
         MediaDataCenter.getInstance().mediaManager.disable(object :
             CommonCallbacks.CompletionCallback {
             override fun onSuccess() {
