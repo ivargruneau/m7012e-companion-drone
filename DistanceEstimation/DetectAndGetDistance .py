@@ -1,5 +1,10 @@
 import cv2
 
+BACKWARD_RATIO = 0.1
+FORWARD_RATIO = 0.05
+FRAME_SIZE = 256 * 256
+VIDEO_PATH = './PedestrianDetection/pedestrianDetection/testVideos/vid_6.mp4'
+
 # Function to detect faces in the image using a Haar Cascade classifier
 def detect_faces(image):
     # Load the pre-trained Haar Cascade face detector
@@ -59,14 +64,14 @@ def calculate_distance_to_camera(known_width, focal_length, pixel_width, boundin
         turning = "turn_left"
         
     if normalized_center_y > 0.6:
-        elevation = "ascend"
-    elif normalized_center_y < 0.4:
         elevation = "descend"
+    elif normalized_center_y < 0.4:
+        elevation = "ascend"
     
     # Adjust drone movement based on bounding box area
-    if area > 100:
+    if area > BACKWARD_RATIO * FRAME_SIZE:
         moving = "backward"
-    elif area < 80:
+    elif area < FORWARD_RATIO * FRAME_SIZE:
         moving = "forward"
     
     # Calculate distance to the face using focal length and known width, convert inches to centimeters
@@ -75,7 +80,7 @@ def calculate_distance_to_camera(known_width, focal_length, pixel_width, boundin
 
 # Load the video file
 #video_path = 'IMG_1193.mp4'
-video_path = './PedestrianDetection/pedestrianDetection/testVideos/vid_6.mp4'
+video_path = VIDEO_PATH
 video_capture = cv2.VideoCapture(video_path)
 
 # Known parameters for calibration (in inches)
@@ -93,7 +98,7 @@ while video_capture.isOpened():
 
     # Get frame dimensions
     frame_height, frame_width = frame.shape[:2]
-
+    FRAME_SIZE = frame_height * frame_width
     # Detect faces in the frame
     detected_faces = detect_faces(frame)
 
@@ -112,9 +117,16 @@ while video_capture.isOpened():
         
         # Perform drone actions based on computed instructions (e.g., send commands to drone)
         # control the drone based on computed instructions
+        # Placeholder code for drone control (replace with actual drone control code)
+        def control_drone(turning, moving, elevation):
+            # Send commands to the drone based on computed instructions
+            print(f"Turning: {turning}, Moving: {moving}, Elevation: {elevation}")
+        # Perform drone actions based on computed instructions
+        control_drone(turning, moving, elevation)
 
         # Display the calculated actions and distance on the frame
         cv2.putText(frame, f"Actions: {turning}, {moving}, {elevation}, Distance: {distance:.2f} cm", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+        
         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
     # Display the frame
