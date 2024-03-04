@@ -35,11 +35,11 @@ class GimbalHandler {
         gimbalFineTuneWidgetModel = GimbalFineTuneWidgetModel(djiSdkModel, uxKeyManager)
     }
     public fun increasePitch(){
-        gimbalFineTuneWidgetModel.fineTunePosture(currentAxis, 20.0).subscribe()
+        gimbalFineTuneWidgetModel.fineTunePosture(currentAxis, 5.0).subscribe()
     }
 
     public fun decreasePitch(){
-        gimbalFineTuneWidgetModel.fineTunePosture(currentAxis, -20.0).subscribe()
+        gimbalFineTuneWidgetModel.fineTunePosture(currentAxis, -5.0).subscribe()
     }
 
     public fun  pitchOther(){

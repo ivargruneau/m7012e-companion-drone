@@ -35,7 +35,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         button1 = findViewById<Button>(R.id.button1)
-        button1.text = "Start Setup"
         textView1 = findViewById<TextView>(R.id.textView1)
         button2 = findViewById<Button>(R.id.button2)
         textView2 = findViewById<TextView>(R.id.textView2)
@@ -45,7 +44,8 @@ class MainActivity : AppCompatActivity() {
         textView4 = findViewById<TextView>(R.id.textView4)
         mediaVM = MediaVM()
         mediaVM.init()
-        button2.text = "Set Free"
+        button1.text = "Get Status"
+        button2.text = "Photo"
         button3.text = "Incr Pitch"
         button4.text = "Decr Pitch"
 
@@ -61,13 +61,14 @@ class MainActivity : AppCompatActivity() {
             //mediaVM.pullMediaFileListFromCamera(-1, -1)
 
 
+
         }
 
 
         button2.setOnClickListener {
             //mediaVM.capturePhoto()
             //increment(textView2)
-            gimbalHandler.pitchOther()
+            mediaVM.capturePhoto()
 
 
 
