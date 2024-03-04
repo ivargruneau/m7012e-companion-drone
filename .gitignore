@@ -1,0 +1,5 @@
+TestClient/testImages/*.JPG
+PedestrianDetection/testImages/*.JPG
+Server/uploads/*.JPG
+/Server/__pycache__
+/PedestrianDetection/__pycache__
