@@ -1,15 +1,15 @@
 package com.example.cdroneapp
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-
+import androidx.appcompat.app.AppCompatActivity
+import com.example.cdroneapp.utils.MediaVM
+import dji.sdk.keyvalue.key.GimbalKey
 import dji.v5.common.callback.CommonCallbacks
 import dji.v5.common.error.IDJIError
-import com.example.cdroneapp.utils.MediaVM
 import dji.v5.manager.datacenter.media.MediaFile
-
+import com.example.cdroneapp.utils.GimbalHandler
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,6 +26,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var myApp : MyApplication
     private lateinit var mediaVM : MediaVM
     private lateinit var mediaList : List<MediaFile>
+    private lateinit var gimbalHandler: GimbalHandler
+
     var indexCounter = 0
     //val myApp = application as MyApplication
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +35,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         button1 = findViewById<Button>(R.id.button1)
-        button1.text = "Start Setup"
         textView1 = findViewById<TextView>(R.id.textView1)
         button2 = findViewById<Button>(R.id.button2)
         textView2 = findViewById<TextView>(R.id.textView2)
@@ -43,52 +44,41 @@ class MainActivity : AppCompatActivity() {
         textView4 = findViewById<TextView>(R.id.textView4)
         mediaVM = MediaVM()
         mediaVM.init()
-        button2.text = "Take Photo"
+        button1.text = "Get Status"
+        button2.text = "Photo"
+        button3.text = "Incr Pitch"
+        button4.text = "Decr Pitch"
 
 
 
         myApp = application as MyApplication
+        gimbalHandler = GimbalHandler()
+        gimbalHandler.init()
+
         button1.setOnClickListener {
 
             textView1.text = myApp.getStatusMessage()
             //mediaVM.pullMediaFileListFromCamera(-1, -1)
 
 
+
         }
 
 
         button2.setOnClickListener {
-            mediaVM.capturePhoto()
+            //mediaVM.capturePhoto()
             //increment(textView2)
-            //beginPhoto()
+            mediaVM.capturePhoto()
+
+
 
         }
         button3.setOnClickListener {
-
-            //mediaList = mediaVM.getMediaFileList()
-            //textView3.text = mediaList.size.toString()
-            textView3.text = mediaVM.getFileStatus()
+            gimbalHandler.increasePitch()
 
         }
         button4.setOnClickListener {
-
-            if (mediaList.size != 0) {
-                var tempList : List<MediaFile>
-                tempList =  List<MediaFile>(1) {mediaList[0]}
-                mediaVM.downloadMediaFile(tempList)
-                textView4.text = "started downloading"
-            }
-            /*
-            if (mediaList.size != 0) {
-                if (mediaList.size> indexCounter) {
-                    val target = mediaList[indexCounter]
-
-                    textView4.text = "Date: " + target.co_j + ". mediafileType: " + target.co_g
-                }
-                indexCounter = indexCounter + 1
-            }
-
-             */
+            gimbalHandler.decreasePitch()
 
         }
 
@@ -97,18 +87,9 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun beginPhoto(){
-        mediaVM.takePhoto(object : CommonCallbacks.CompletionCallback {
-            override fun onSuccess() {
-                textView2.text ="Photo success"
-            }
 
-            override fun onFailure(error: IDJIError) {
-                textView2.text ="Photo Failed"
 
-            }
-        })
-    }
+
 
 
 
