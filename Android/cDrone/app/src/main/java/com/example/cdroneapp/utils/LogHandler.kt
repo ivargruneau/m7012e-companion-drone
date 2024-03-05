@@ -1,22 +1,29 @@
 package com.example.cdroneapp.utils
 import android.util.Log
+import com.example.cdroneapp.R
 import java.util.Collections
-
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.map
 
 object LogHandler {
-    private val logs = Collections.synchronizedList(mutableListOf<String>())
+    private val _logMessages = MutableSharedFlow<List<String>>(replay = 1)
+    private val logs = mutableListOf<String>()
+    val logMessages = _logMessages.asSharedFlow()
 
-    fun log(message: String) {
+    suspend fun log(message: String) {
+        // Create a temporary list to hold the new state
+        val newLogs: List<String>
         synchronized(logs) {
             logs.add(message)
-            // Optionally, limit the size of logs to avoid memory issues
-            if (logs.size > 1000) logs.removeAt(0)
+            // Ensure only the most recent 20 entries are kept
+            if (logs.size > 20) {
+                logs.removeAt(0) // Remove the oldest log entry
+            }
+            // Prepare the snapshot of logs to emit
+            newLogs = ArrayList(logs)
         }
-    }
-
-    fun getLogs(): List<String> {
-        synchronized(logs) {
-            return ArrayList(logs) // Return a copy to avoid concurrent modification issues
-        }
+        // Emit outside the synchronized block to avoid suspension inside critical section
+        _logMessages.emit(newLogs)
     }
 }

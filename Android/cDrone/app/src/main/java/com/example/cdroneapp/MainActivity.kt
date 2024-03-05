@@ -13,9 +13,19 @@ import dji.v5.manager.datacenter.media.MediaFile
 import com.example.cdroneapp.utils.GimbalHandler
 import com.example.cdroneapp.utils.LogHandler
 import com.example.cdroneapp.utils.PhotoFetcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
+
+    private val logTextView by lazy { findViewById<TextView>(R.id.logTextView) }
+    private val uiScope = CoroutineScope(Dispatchers.Main)
     private lateinit var textView1: TextView
     private lateinit var textView2: TextView
     private lateinit var textView3: TextView
@@ -38,7 +48,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        observeLogs()
         button1 = findViewById<Button>(R.id.button1)
         textView1 = findViewById<TextView>(R.id.textView1)
         button2 = findViewById<Button>(R.id.button2)
@@ -86,8 +96,8 @@ class MainActivity : AppCompatActivity() {
 
         }
         button4.setOnClickListener {
-            updateLogView(this, logView)
-            gimbalHandler.decreasePitch()
+
+
 
         }
 
@@ -95,12 +105,22 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun updateLogView(activity: Activity, logView: TextView) {
-        val logs = LogHandler.getLogs().joinToString("\n")
-        activity.runOnUiThread {
-            logView.text = logs
+
+    override fun onDestroy() {
+        super.onDestroy()
+        uiScope.cancel() // Cancel the coroutine scope when the activity is destroyed
+    }
+
+
+    private fun observeLogs() {
+        uiScope.launch {
+            LogHandler.logMessages.collect { messages ->
+                logView.text = messages.joinToString("\n")
+            }
         }
     }
+
+
 
 
 
