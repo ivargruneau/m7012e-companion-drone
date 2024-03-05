@@ -77,5 +77,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
+    <TextView
+        android:id="@+id/logTextView"
+        app:layout_constraintTop_toBottomOf="@id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Log will appear here"
+        />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

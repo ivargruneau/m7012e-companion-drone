@@ -84,8 +84,8 @@ class MediaVM() {
     fun capturePhoto() {
         takePhoto(object : CommonCallbacks.CompletionCallback {
             override fun onSuccess() {
-                sleep(1000)
-                getMediaFromCamera(1, 1)
+                //sleep(1000)
+                //getMediaFromCamera(1, 1)
             }
 
             override fun onFailure(error: IDJIError) {
