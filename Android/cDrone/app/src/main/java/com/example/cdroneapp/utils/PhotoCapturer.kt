@@ -28,7 +28,9 @@ class PhotoCapturer {
         thread {
             timer = Timer().apply {
                 scheduleAtFixedRate(object : TimerTask() {
-                    override fun run() {
+                    override fun run() {7-
+
+                            
                         specificMethodToExecute()
                     }
                 }, 0, intervalMillis)
