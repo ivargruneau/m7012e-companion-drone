@@ -5,21 +5,30 @@ import androidx.lifecycle.MutableLiveData
 import java.util.Timer
 import java.util.TimerTask
 import kotlin.concurrent.thread
-import com.example.cdroneapp.utils.MediaVM
 import dji.v5.common.callback.CommonCallbacks
 import dji.v5.common.error.IDJIError
 import dji.v5.manager.datacenter.MediaDataCenter
 import dji.v5.manager.datacenter.media.MediaFile
+import dji.v5.manager.datacenter.media.MediaFileDownloadListener
 import dji.v5.manager.datacenter.media.MediaFileListData
 import dji.v5.manager.datacenter.media.MediaFileListState
+import dji.v5.manager.datacenter.media.MediaFileListStateListener
 import dji.v5.manager.datacenter.media.PullMediaFileListParam
+import dji.v5.utils.common.ContextUtil
+import dji.v5.utils.common.DiskUtil
+import dji.v5.utils.common.LogUtils
+import dji.v5.utils.common.StringUtils
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.io.BufferedOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 class PhotoFetcher {
     private var intervalMillis: Long = 0
     private var timer: Timer? = null
-    private lateinit var mediaVM : MediaVM
+
     private lateinit var latestMediaFile : MediaFile
     private var initialized = false
     private var counter = 0
@@ -28,8 +37,11 @@ class PhotoFetcher {
     var isPlayBack = MutableLiveData<Boolean?>()
     var latest_file = "Nothing yet"
     private lateinit var networkHandler: NetworkHandler
-    fun init2() {
 
+
+    fun init(intervalMillis: Long) {
+        this.intervalMillis = intervalMillis
+        addMediaFileListStateListener()
         mediaFileListData.value = MediaDataCenter.getInstance().mediaManager.mediaFileListData
         MediaDataCenter.getInstance().mediaManager.addMediaFileListStateListener { mediaFileListState ->
             if (mediaFileListState == MediaFileListState.UP_TO_DATE) {
@@ -39,12 +51,17 @@ class PhotoFetcher {
         }
         networkHandler = NetworkHandler()
 
+
     }
+    private fun addMediaFileListStateListener() {
+        MediaDataCenter.getInstance().mediaManager.addMediaFileListStateListener(object :
+            MediaFileListStateListener {
+            override fun onUpdate(mediaFileListState: MediaFileListState) {
+                fileListState.postValue(mediaFileListState)
 
-    fun init(intervalMillis: Long, mediaVM :MediaVM ) {
-        this.intervalMillis = intervalMillis
-        this.mediaVM = mediaVM
+            }
 
+        })
     }
 
     fun start() {
@@ -63,7 +80,7 @@ class PhotoFetcher {
                 scheduleAtFixedRate(object : TimerTask() {
                     override fun run() {
 
-                        specificMethodToExecute()
+                        getMediaFromCamera(1, 1)
                         //testPrintCounter(counter)
                         //counter += 1
                     }
@@ -83,13 +100,8 @@ class PhotoFetcher {
         timer = null
     }
 
-    // Define the specific method you want to execute on each tick
-    private fun specificMethodToExecute() {
-        getMediaFromCamera(1, 1)
-        // Place your code here that you want to execute periodically
 
-    }
-
+    //getMediaFromCamera(mediaFileIndex: Int, count: Int) should be (1,1) for the latest
     fun getMediaFromCamera(mediaFileIndex: Int, count: Int) {
         var currentTime = System.currentTimeMillis()
         MediaDataCenter.getInstance().mediaManager.pullMediaFileListFromCamera(
@@ -106,8 +118,11 @@ class PhotoFetcher {
                 }
 
                 override fun onFailure(error: IDJIError) {
+                    GlobalScope.launch {
+                        LogHandler.log("Function getMediaFromCamera encounted onFailure, error : " + error)
+                    }
 
-                    //LogUtils.e(logTag, "fetch failed$error")
+
                 }
             })
     }
@@ -130,9 +145,66 @@ class PhotoFetcher {
                 GlobalScope.launch {
                     LogHandler.log("Received a new photo: " + newMediaFile.fileName)
                 }
+                downloadFileAndSend(newMediaFile)
 
             }
         }
+
+    }
+    private fun downloadFileAndSend(mediaFile :MediaFile ) {
+        val dirs = File(DiskUtil.getExternalCacheDirPath(ContextUtil.getContext(),  "/mediafile"))
+        if (!dirs.exists()) {
+            dirs.mkdirs()
+        }
+        val filepath = DiskUtil.getExternalCacheDirPath(ContextUtil.getContext(),  "/mediafile/"  + mediaFile?.fileName)
+        val file = File(filepath)
+        var offset = 0L
+        val outputStream = FileOutputStream(file, true)
+        val bos = BufferedOutputStream(outputStream)
+        mediaFile?.pullOriginalMediaFileFromCamera(offset, object : MediaFileDownloadListener {
+            override fun onStart() {
+                LogUtils.i("MediaFile" , "${mediaFile.fileIndex } start download"  )
+            }
+
+            override fun onProgress(total: Long, current: Long) {
+                val fullSize = offset + total;
+                val downloadedSize = offset + current
+                val data: Double = StringUtils.formatDouble((downloadedSize.toDouble() / fullSize.toDouble()))
+                val result: String = StringUtils.formatDouble(data * 100, "#0").toString() + "%"
+                LogUtils.i("MediaFile"  , "${mediaFile.fileIndex}  progress $result")
+            }
+
+            override fun onRealtimeDataUpdate(data: ByteArray, position: Long) {
+                try {
+                    bos.write(data)
+                    bos.flush()
+                } catch (e: IOException) {
+                    LogUtils.e("MediaFile", "write error" + e.message)
+                }
+            }
+
+            override fun onFinish() {
+                try {
+                    outputStream.close()
+                    bos.close()
+                } catch (error: IOException) {
+                    LogUtils.e("MediaFile", "close error$error")
+                }
+                GlobalScope.launch {
+                    LogHandler.log("Download finnished")
+                }
+                //latest_file = filepath
+                networkHandler.sendImageToServer("1234", filepath )
+
+                LogUtils.i("MediaFile" , "${mediaFile.fileIndex }  download finish"  )
+            }
+
+            override fun onFailure(error: IDJIError?) {
+                LogUtils.e("MediaFile", "download error$error")
+            }
+
+        })
+
 
     }
 

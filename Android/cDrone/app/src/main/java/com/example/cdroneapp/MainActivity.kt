@@ -5,13 +5,14 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.cdroneapp.utils.MediaVM
+
 import dji.sdk.keyvalue.key.GimbalKey
 import dji.v5.common.callback.CommonCallbacks
 import dji.v5.common.error.IDJIError
 import dji.v5.manager.datacenter.media.MediaFile
 import com.example.cdroneapp.utils.GimbalHandler
 import com.example.cdroneapp.utils.LogHandler
+import com.example.cdroneapp.utils.PhotoCapturer
 import com.example.cdroneapp.utils.PhotoFetcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,80 +27,83 @@ class MainActivity : AppCompatActivity() {
 
     private val logTextView by lazy { findViewById<TextView>(R.id.logTextView) }
     private val uiScope = CoroutineScope(Dispatchers.Main)
-    private lateinit var textView1: TextView
-    private lateinit var textView2: TextView
-    private lateinit var textView3: TextView
-    private lateinit var textView4: TextView
     private lateinit var logView : TextView
 
-    private lateinit var button1 :Button
-    private lateinit var button2 :Button
-    private lateinit var button3 :Button
-    private lateinit var button4 :Button
+
+    private lateinit var forwardButton : Button
+    private lateinit var backwardButton : Button
+    private lateinit var yawRightButton : Button
+    private lateinit var yawLeftButton : Button
+
+    private lateinit var liftButton : Button
+    private lateinit var landButton : Button
+
+    private lateinit var upButton : Button
+    private lateinit var hoverButton : Button
+    private lateinit var downButton : Button
+
+    private lateinit var startButton: Button
+    private lateinit var panicButton : Button
+
 
     private lateinit var myApp : MyApplication
-    private lateinit var mediaVM : MediaVM
-    private lateinit var mediaList : List<MediaFile>
+
     private lateinit var gimbalHandler: GimbalHandler
 
     private lateinit var photoFetcher: PhotoFetcher
-    var indexCounter = 0
+    private lateinit var photoCapturer: PhotoCapturer
     //val myApp = application as MyApplication
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         observeLogs()
-        button1 = findViewById<Button>(R.id.button1)
-        textView1 = findViewById<TextView>(R.id.textView1)
-        button2 = findViewById<Button>(R.id.button2)
-        textView2 = findViewById<TextView>(R.id.textView2)
-        button3 = findViewById<Button>(R.id.button3)
-        textView3 = findViewById<TextView>(R.id.textView3)
-        button4 = findViewById<Button>(R.id.button4)
-        textView4 = findViewById<TextView>(R.id.textView4)
-        logView = findViewById<TextView>(R.id.logTextView)
-        mediaVM = MediaVM()
-        mediaVM.init()
+
+        forwardButton = findViewById<Button>(R.id.forward_button)
+        backwardButton = findViewById<Button>(R.id.backward_button)
+        yawRightButton = findViewById<Button>(R.id.yawRight_button)
+        yawLeftButton = findViewById<Button>(R.id.yawLeft_button)
+
+        liftButton = findViewById<Button>(R.id.lift_button)
+        landButton = findViewById<Button>(R.id.land_button)
+
+        upButton = findViewById<Button>(R.id.up_button)
+        hoverButton = findViewById<Button>(R.id.hover_button)
+        downButton = findViewById<Button>(R.id.down_button)
+
+        panicButton = findViewById<Button>(R.id.panic_button)
+        startButton = findViewById<Button>(R.id.start_button)
+
+        logView  = findViewById<TextView>(R.id.logTextView)
+
         photoFetcher = PhotoFetcher()
-        photoFetcher.init(1000,mediaVM )
-        button1.text = "Get Status"
-        button2.text = "Photo"
-        button3.text = "Start fetcher"
-        button4.text = "Update Log"
+        photoFetcher.init(1000)
 
-
+        photoCapturer = PhotoCapturer()
+        photoCapturer.init(1000)
 
         myApp = application as MyApplication
         gimbalHandler = GimbalHandler()
         gimbalHandler.init()
 
-        button1.setOnClickListener {
 
-            textView1.text = myApp.getStatusMessage()
+
+        startButton.setOnClickListener {
+
+            photoFetcher.start()
+            photoCapturer.start()
+
+
+
+        }
+
+        //button1.setOnClickListener {
+
+            //textView1.text = myApp.getStatusMessage()
             //mediaVM.pullMediaFileListFromCamera(-1, -1)
 
 
 
-        }
-
-
-        button2.setOnClickListener {
-            //mediaVM.capturePhoto()
-            //increment(textView2)
-            mediaVM.capturePhoto()
-
-
-
-        }
-        button3.setOnClickListener {
-            photoFetcher.start()
-
-        }
-        button4.setOnClickListener {
-
-
-
-        }
+        //}
 
 
 
@@ -119,6 +123,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+
 
 
 

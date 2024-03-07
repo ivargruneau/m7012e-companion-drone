@@ -17,7 +17,7 @@ object LogHandler {
         synchronized(logs) {
             logs.add(message)
             // Ensure only the most recent 20 entries are kept
-            if (logs.size > 20) {
+            if (logs.size > 12) {
                 logs.removeAt(0) // Remove the oldest log entry
             }
             // Prepare the snapshot of logs to emit
