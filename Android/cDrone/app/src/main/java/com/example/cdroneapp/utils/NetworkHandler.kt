@@ -1,4 +1,6 @@
 package com.example.cdroneapp.utils
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import okhttp3.*
 import java.io.File
 import java.io.IOException
@@ -27,19 +29,33 @@ class NetworkHandler {
             .post(requestBody)
             .build()
 
+        val request2 = Request.Builder()
+            .url("http://192.168.0.188:4280/upload")
+            .post(requestBody)
+            .build()
+
         // Asynchronously send the request
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 e.printStackTrace()
                 // Handle failure
+                GlobalScope.launch {
+                    LogHandler.log("Error when sending: " +  e)
+                }
             }
 
             override fun onResponse(call: Call, response: Response) {
                 if (!response.isSuccessful) {
                     // Handle error
+                    GlobalScope.launch {
+                        LogHandler.log("Respons: error ")
+                    }
                 } else {
                     // Handle success
                     val responseBody = response.body?.string()
+                    GlobalScope.launch {
+                        LogHandler.log("Respons: " + responseBody)
+                    }
                     // Do something with the response
                 }
             }

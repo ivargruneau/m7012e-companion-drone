@@ -54,14 +54,11 @@ class GimbalHandler {
         val desiredMode = GimbalMode.FREE // The mode you want to set
         KeyManager.getInstance().setValue(DJIKey.create(gimbalModeKey), desiredMode, object : CommonCallbacks.CompletionCallback{
             override fun onSuccess() {
-                val a = 0
-                val b = a+ 1
+
             }
 
             override fun onFailure(error: IDJIError) {
-                val e = error
-                val a = 0
-                val b = a+ 1
+
 
             }
         })

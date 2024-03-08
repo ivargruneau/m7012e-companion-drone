@@ -6,76 +6,176 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
     <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Update status"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:id="@+id/land_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="@drawable/square_button_background"
+        android:padding="2dp"
+        android:text="Land"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/down_button" />
+
+    <Button
+        android:id="@+id/start_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="56dp"
+        android:background="@drawable/square_button_background"
+        android:padding="2dp"
+        android:text="Start"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/panic_button" />
+
+
+    <Button
+        android:id="@+id/lift_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="80dp"
+        android:background="@drawable/square_button_background"
+        android:padding="0dp"
+        android:text="Lift"
+        app:layout_constraintBottom_toTopOf="@+id/land_button"
+        app:layout_constraintEnd_toStartOf="@+id/up_button" />
+
+    <Button
+        android:id="@+id/invisible_button2"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="0dp"
+        android:visibility="invisible"
+        android:background="@drawable/square_button_background"
+        android:enabled="false"
+
+        android:padding="0dp"
+        android:text="Non Functional Button"
+        app:layout_constraintBottom_toTopOf="@+id/backward_button"
+        app:layout_constraintEnd_toStartOf="@+id/yawRight_button" />
+
+    <Button
+        android:id="@+id/invisible_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="0dp"
+        android:visibility="invisible"
+        android:background="@drawable/square_button_background"
+        android:enabled="false"
+
+        android:padding="0dp"
+        android:text="Non Functional Button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/panic_button"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:background="@drawable/square_panic_button_background"
+        android:padding="0dp"
+        android:text="PANIC!"
+        app:backgroundTint="#CF0000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_bias="0.3"/>
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        app:layout_constraintTop_toBottomOf="@id/button1"
+        app:layout_constraintHorizontal_bias="0.001"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+
+
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button 2"
-        app:layout_constraintTop_toBottomOf="@id/textView1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="0"
-        app:layout_constraintTop_toBottomOf="@id/button2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:id="@+id/hover_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="@drawable/square_button_background"
+        android:padding="0dp"
+        android:text="Hover"
+        app:layout_constraintBottom_toTopOf="@+id/down_button"
+        app:layout_constraintEnd_toStartOf="@+id/yawLeft_button" />
 
     <Button
-        android:id="@+id/button3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button 3"
-        app:layout_constraintTop_toBottomOf="@id/textView2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:id="@+id/forward_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginEnd="80dp"
+        android:background="@drawable/square_button_background"
+        android:padding="0dp"
+        android:text="Forward"
+        app:layout_constraintBottom_toTopOf="@+id/invisible_button2"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
+        android:id="@+id/logTextView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="0"
-        app:layout_constraintTop_toBottomOf="@id/button3"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:scrollbars="vertical"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="0dp"
+        android:text="Log"
+        android:textSize="10sp"
+        app:layout_constraintHorizontal_bias="0.003"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <Button
-        android:id="@+id/button4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button 4"
-        app:layout_constraintTop_toBottomOf="@id/textView3"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="0"
-        app:layout_constraintTop_toBottomOf="@id/button4"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:id="@+id/yawLeft_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="80dp"
+        android:background="@drawable/square_button_background"
+        android:padding="0dp"
+        android:text="Yaw L"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/invisible_button2" />
+
+    <Button
+        android:id="@+id/backward_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="0dp"
+        android:background="@drawable/square_button_background"
+        android:padding="0dp"
+        android:text="Back"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/invisible_button" />
+
+    <Button
+        android:id="@+id/up_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginEnd="80dp"
+        android:background="@drawable/square_button_background"
+        android:padding="0dp"
+        android:text="Up"
+        app:layout_constraintBottom_toTopOf="@+id/hover_button"
+        app:layout_constraintEnd_toStartOf="@+id/forward_button" />
+
+    <Button
+        android:id="@+id/down_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginEnd="80dp"
+        android:background="@drawable/square_button_background"
+        android:padding="0dp"
+        android:text="Down"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/backward_button" />
+
+    <Button
+        android:id="@+id/yawRight_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="@drawable/square_button_background"
+        android:padding="0dp"
+        android:text="Yaw R"
+        app:layout_constraintBottom_toTopOf="@+id/invisible_button"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
