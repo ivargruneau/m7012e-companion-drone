@@ -7,18 +7,34 @@ import dji.v5.manager.datacenter.MediaDataCenter
 import dji.v5.manager.datacenter.media.MediaFileListState
 import com.example.cdroneapp.utils.BasicAircraftControlVM
 import dji.sdk.keyvalue.value.common.EmptyMsg
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 class MovementHandler {
-    private val virtualStickVM = VirtualStickVM()
-    private val basicAircraftControlVM = BasicAircraftControlVM()
+    private lateinit var virtualStickVM : VirtualStickVM
+    private lateinit var basicAircraftControlVM : BasicAircraftControlVM
     public fun init() {
+        virtualStickVM = VirtualStickVM()
+        virtualStickVM.init()
+        //basicAircraftControlVM = BasicAircraftControlVM()
+    }
+    public fun start() {
+        //virtualStickVM.listenRCStick()
+        enableVS()
+    }
+    private fun enableVS(){
         virtualStickVM.enableVirtualStick(object : CommonCallbacks.CompletionCallback {
             override fun onSuccess() {
-
+                GlobalScope.launch {
+                    LogHandler.log("enableVS done")
+                }
             }
 
             override fun onFailure(error: IDJIError) {
-
+                GlobalScope.launch {
+                    LogHandler.log("enableVS error: " + error)
+                }
             }
         })
     }
@@ -138,5 +154,87 @@ class MovementHandler {
         })
 
     }
+    public fun start_yaw(){
+        virtualStickVM.start_yaw(30)
+    }
+    public fun stop_yaw(){
+        virtualStickVM.stop_yaw()
+    }
 
+    public fun disableVS(){
+
+        virtualStickVM.disableVirtualStick(object : CommonCallbacks.CompletionCallback {
+            override fun onSuccess() {
+
+                GlobalScope.launch {
+                    LogHandler.log("disableVirtualStick done")
+                }
+
+            }
+
+            override fun onFailure(error: IDJIError) {
+                GlobalScope.launch {
+                    LogHandler.log("disableVirtualStick error: " + error)
+                }
+            }
+        })
+    }
+    fun start_takeoff() {
+        basicAircraftControlVM.startTakeOff(object :
+            CommonCallbacks.CompletionCallbackWithParam<EmptyMsg> {
+            override fun onSuccess(t: EmptyMsg?) {
+                GlobalScope.launch {
+                    LogHandler.log("start_takeoff done")
+                }
+            }
+
+            override fun onFailure(error: IDJIError) {
+                GlobalScope.launch {
+                    LogHandler.log("start_takeoff error: " + error)
+                }
+            }
+        })
+    }
+
+    fun start_landing() {
+        basicAircraftControlVM.startLanding(object :
+            CommonCallbacks.CompletionCallbackWithParam<EmptyMsg> {
+            override fun onSuccess(t: EmptyMsg?) {
+                GlobalScope.launch {
+                    LogHandler.log("start_landing done")
+                }
+            }
+
+            override fun onFailure(error: IDJIError) {
+                GlobalScope.launch {
+                    LogHandler.log("start_landing error: " + error)
+                }
+            }
+        })
+    }
+    public fun yaw_test_start(){
+
+
+        virtualStickVM.setLeftPosition(30,0)
+
+    }
+
+    public fun yaw_test_stop(){
+
+
+        virtualStickVM.setLeftPosition(0,0)
+
+    }
+    public fun clear(){
+        virtualStickVM = VirtualStickVM()
+        //virtualStickVM.clear()
+    }
+
+
+    public fun test_land(){
+
+
+        virtualStickVM.setLeftPosition(0,-10)
+
+    }
 }

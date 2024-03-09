@@ -21,14 +21,17 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import com.example.cdroneapp.utils.MovementHandler
+import com.example.cdroneapp.utils.BasicAircraftControlVM
+import dji.sdk.keyvalue.value.common.EmptyMsg
 
 class MainActivity : AppCompatActivity() {
 
-
+    private lateinit var basicAircraftControlVM : BasicAircraftControlVM
     private val logTextView by lazy { findViewById<TextView>(R.id.logTextView) }
     private val uiScope = CoroutineScope(Dispatchers.Main)
     private lateinit var logView : TextView
-
+    private lateinit var movementHandler: MovementHandler
 
     private lateinit var forwardButton : Button
     private lateinit var backwardButton : Button
@@ -52,6 +55,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var photoFetcher: PhotoFetcher
     private lateinit var photoCapturer: PhotoCapturer
+
     //val myApp = application as MyApplication
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,26 +79,50 @@ class MainActivity : AppCompatActivity() {
 
         logView  = findViewById<TextView>(R.id.logTextView)
 
-        photoFetcher = PhotoFetcher()
-        photoFetcher.init(1000)
+        //photoFetcher = PhotoFetcher()
+        //photoFetcher.init(1000)
 
-        photoCapturer = PhotoCapturer()
-        photoCapturer.init(1000)
+        //photoCapturer = PhotoCapturer()
+        //photoCapturer.init(1000)
 
         myApp = application as MyApplication
-        gimbalHandler = GimbalHandler()
-        gimbalHandler.init()
-
-
+        //gimbalHandler = GimbalHandler()
+        //gimbalHandler.init()
+        movementHandler = MovementHandler()
+        movementHandler.init()
+        basicAircraftControlVM = BasicAircraftControlVM()
 
         startButton.setOnClickListener {
-
-            photoFetcher.start()
-            photoCapturer.start()
+            movementHandler.start()
+            //photoFetcher.start()
+            //photoCapturer.start()
 
 
 
         }
+
+        liftButton.setOnClickListener{
+            //movementHandler.start_takeoff()
+            takeOff()
+
+        }
+        landButton.setOnClickListener{
+            //land()
+            movementHandler.test_land()
+        }
+        yawLeftButton.setOnClickListener{
+            movementHandler.yaw_test_start()
+        }
+        hoverButton.setOnClickListener{
+            movementHandler.yaw_test_start()
+        }
+
+        panicButton.setOnClickListener{
+            //movementHandler.disableVS()
+            movementHandler.clear()
+        }
+
+
 
         //button1.setOnClickListener {
 
@@ -122,6 +150,31 @@ class MainActivity : AppCompatActivity() {
                 logView.text = messages.joinToString("\n")
             }
         }
+    }
+    private fun takeOff(){
+        basicAircraftControlVM.startTakeOff(object :
+            CommonCallbacks.CompletionCallbackWithParam<EmptyMsg> {
+            override fun onSuccess(t: EmptyMsg?) {
+
+            }
+
+            override fun onFailure(error: IDJIError) {
+
+            }
+        })
+    }
+
+    private fun land(){
+        basicAircraftControlVM.startLanding(object :
+            CommonCallbacks.CompletionCallbackWithParam<EmptyMsg> {
+            override fun onSuccess(t: EmptyMsg?) {
+
+            }
+
+            override fun onFailure(error: IDJIError) {
+
+            }
+        })
     }
 
 

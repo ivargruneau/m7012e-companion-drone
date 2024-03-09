@@ -9,6 +9,8 @@ import dji.v5.manager.KeyManager
 import dji.v5.manager.aircraft.virtualstick.VirtualStickManager
 import dji.v5.manager.aircraft.virtualstick.VirtualStickState
 import dji.v5.manager.aircraft.virtualstick.VirtualStickStateListener
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 /**
  * Class Description
@@ -23,6 +25,7 @@ class VirtualStickVM : DJIViewModel() {
     val currentSpeedLevel = MutableLiveData(0.0)
     var useRcStick = MutableLiveData(false)
     val currentVirtualStickStateInfo = MutableLiveData(VirtualStickStateInfo())
+    private lateinit var vsListener: VirtualStickStateListener
 
     val virtualStickAdvancedParam = MutableLiveData(VirtualStickFlightControlParam()).apply {
         value?.rollPitchCoordinateSystem = FlightCoordinateSystem.BODY
@@ -34,10 +37,12 @@ class VirtualStickVM : DJIViewModel() {
     // RC Stick Value
     var stickValue = MutableLiveData(RCStickValue(0, 0, 0, 0))
 
-    init {
+    public fun init(){
         currentSpeedLevel.value = VirtualStickManager.getInstance().speedLevel
+
         VirtualStickManager.getInstance().setVirtualStickStateListener(object :
             VirtualStickStateListener {
+
             override fun onVirtualStickStateUpdate(stickState: VirtualStickState) {
                 currentVirtualStickStateInfo.postValue(currentVirtualStickStateInfo.value?.apply {
                     this.state = stickState
@@ -47,6 +52,8 @@ class VirtualStickVM : DJIViewModel() {
             override fun onChangeReasonUpdate(reason: FlightControlAuthorityChangeReason) {
                 currentVirtualStickStateInfo.postValue(currentVirtualStickStateInfo.value?.apply {
                     this.reason = reason
+                    GlobalScope.launch {LogHandler.log("onChangeReasonUpdate: " + reason)}
+
                 })
             }
         })
@@ -127,6 +134,7 @@ class VirtualStickVM : DJIViewModel() {
     override fun onCleared() {
         KeyManager.getInstance().cancelListen(this)
         VirtualStickManager.getInstance().clearAllVirtualStickStateListener()
+
     }
 
     data class VirtualStickStateInfo(
@@ -142,5 +150,22 @@ class VirtualStickVM : DJIViewModel() {
             return "leftHorizontal=$leftHorizontal,leftVertical=$leftVertical,\n" +
                     "rightHorizontal=$rightHorizontal,rightVertical=$rightVertical"
         }
+    }
+
+    public fun start_yaw(stick_val : Int) {
+
+        stickValue.value?.leftHorizontal = stick_val
+
+        tryUpdateVirtualStickByRc()
+    }
+
+    public fun stop_yaw() {
+        stickValue.value?.leftHorizontal = 0
+
+        tryUpdateVirtualStickByRc()
+
+    }
+    public fun clear(){
+
     }
 }

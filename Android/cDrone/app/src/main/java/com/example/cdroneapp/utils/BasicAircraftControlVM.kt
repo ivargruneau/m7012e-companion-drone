@@ -15,6 +15,7 @@ class BasicAircraftControlVM : DJIViewModel() {
         }, { e: IDJIError ->
             callback.onFailure(e)
         })
+
     }
 
     fun startLanding(callback: CommonCallbacks.CompletionCallbackWithParam<EmptyMsg>) {
