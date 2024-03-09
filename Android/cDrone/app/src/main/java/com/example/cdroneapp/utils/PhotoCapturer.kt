@@ -66,7 +66,7 @@ class PhotoCapturer {
         })
     }
 
-    fun takePhoto(callback: CommonCallbacks.CompletionCallback) {
+    private fun takePhoto(callback: CommonCallbacks.CompletionCallback) {
 
         RxUtil.setValue(
             KeyTools.createKey<CameraMode>(

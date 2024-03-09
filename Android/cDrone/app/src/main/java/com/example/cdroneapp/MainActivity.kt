@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.cdroneapp.utils.BasicAircraftControlVM
+
 import com.example.cdroneapp.utils.GimbalHandler
 import com.example.cdroneapp.utils.LogHandler
 import com.example.cdroneapp.utils.MovementHandler
@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var basicAircraftControlVM : BasicAircraftControlVM
+
     private val logTextView by lazy { findViewById<TextView>(R.id.logTextView) }
     private val uiScope = CoroutineScope(Dispatchers.Main)
     //private lateinit var logView : TextView
@@ -48,12 +48,16 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var enableVSButton : Button
     private lateinit var disableVSButton : Button
+
+    private lateinit var startCapButton : Button
+    private lateinit var stopCapButton: Button
     private lateinit var myApp : MyApplication
 
     private lateinit var gimbalHandler: GimbalHandler
 
     private lateinit var photoFetcher: PhotoFetcher
     private lateinit var photoCapturer: PhotoCapturer
+
 
     //val myApp = application as MyApplication
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,26 +83,31 @@ class MainActivity : AppCompatActivity() {
         enableVSButton = findViewById<Button>(R.id.enableVS_button)
         disableVSButton = findViewById<Button>(R.id.disableVS_button)
 
+        startCapButton = findViewById<Button>(R.id.startCap_button)
+        stopCapButton = findViewById<Button>(R.id.stopCap_button)
+
 
         //logView  = findViewById<TextView>(R.id.logTextView)
+        movementHandler = MovementHandler()
+        photoFetcher = PhotoFetcher()
+        photoFetcher.init(1000, movementHandler)
 
-        //photoFetcher = PhotoFetcher()
-        //photoFetcher.init(1000)
 
-        //photoCapturer = PhotoCapturer()
-        //photoCapturer.init(1000)
-
+        photoCapturer = PhotoCapturer()
+        photoCapturer.init(1000)
+        movementHandler.init(photoCapturer)
         myApp = application as MyApplication
         //gimbalHandler = GimbalHandler()
         //gimbalHandler.init()
-        movementHandler = MovementHandler()
 
-        basicAircraftControlVM = BasicAircraftControlVM()
+
+
 
         startButton.setOnClickListener {
+            photoFetcher.start()
+            //movementHandler.startMH()
 
-            //photoFetcher.start()
-            //photoCapturer.start()
+
 
         }
 
@@ -120,6 +129,7 @@ class MainActivity : AppCompatActivity() {
 
         panicButton.setOnClickListener{
             //movementHandler.disableVS()
+            movementHandler.getMotorStatus()
 
         }
 
@@ -142,11 +152,25 @@ class MainActivity : AppCompatActivity() {
 
         backwardButton.setOnClickListener{
             //movementHandler.disableVS()
-            basicAircraftControlVM.performLandingConfirmationAction()
+            photoCapturer.capturePhoto()
+
+        }
+
+        startCapButton.setOnClickListener{
+
+
+        }
+
+        stopCapButton.setOnClickListener{
+            photoFetcher.stop()
+            photoCapturer.stop()
+
         }
 
         upButton.setOnClickListener{
             //movementHandler.disableVS()
+            GlobalScope.launch { LogHandler.log("height: " + movementHandler.getHeight())}
+
 
 
         }
@@ -182,34 +206,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    private fun takeOff(){
-        basicAircraftControlVM.startTakeOff(object :
-            CommonCallbacks.CompletionCallbackWithParam<EmptyMsg> {
-            override fun onSuccess(t: EmptyMsg?) {
-                GlobalScope.launch {LogHandler.log("takeOff onSuccess")}
-            }
-
-            override fun onFailure(error: IDJIError) {
-                GlobalScope.launch {LogHandler.log("takeOff onFailure, error: " + error)}
-            }
-        })
-    }
-
-    private fun land(){
-        basicAircraftControlVM.startLanding(object :
-            CommonCallbacks.CompletionCallbackWithParam<EmptyMsg> {
-            override fun onSuccess(t: EmptyMsg?) {
-                GlobalScope.launch {LogHandler.log("land onSuccess")}
-            }
-
-            override fun onFailure(error: IDJIError) {
-                GlobalScope.launch {LogHandler.log("land onFailure, error: " + error)}
-            }
-        })
-    }
-
-
-
 
 
 

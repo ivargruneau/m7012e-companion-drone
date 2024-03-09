@@ -6,8 +6,25 @@ import java.io.File
 import java.io.IOException
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.asRequestBody
-
+import org.json.JSONObject
+import kotlin.properties.Delegates
+import kotlin.system.measureTimeMillis
+import kotlin.system.measureNanoTime
 class NetworkHandler {
+    private lateinit var movementHandler: MovementHandler
+    private var startTime by Delegates.notNull<Long>()
+    fun init(movementHandler: MovementHandler) {
+        this.movementHandler = movementHandler
+    }
+
+    public fun timedSendImageToServer(sessionId: String, filePath: String){
+        startTime = System.currentTimeMillis()
+            // Call your function here
+        sendImageToServer(sessionId, filePath)
+
+
+
+    }
     public fun sendImageToServer(sessionId: String, filePath: String) {
         val client = OkHttpClient()
         val file = File(filePath)
@@ -53,13 +70,28 @@ class NetworkHandler {
                 } else {
                     // Handle success
                     val responseBody = response.body?.string()
-                    GlobalScope.launch {
-                        LogHandler.log("Respons: " + responseBody)
-                    }
-                    // Do something with the response
+                    unpackageResponse(responseBody)
+
                 }
             }
         })
+    }
+    private fun unpackageResponse(resp : String?){
+        val jsonObject = JSONObject(resp)
+
+
+        val pedestrianDetected = jsonObject.getBoolean("pedestrianDetected")
+        val distance = jsonObject.getDouble("distance")
+        val horizontalAngle = jsonObject.getDouble("horizontalAngle")
+        val verticalAngle = jsonObject.getDouble("verticalAngle")
+
+        val endTime = System.currentTimeMillis()
+        val duration = endTime - startTime
+
+
+        GlobalScope.launch { LogHandler.log("Execution time: $duration milliseconds")}
+        GlobalScope.launch { LogHandler.log("Respons. pedD: " + pedestrianDetected + ". dist: " + distance.toString())}
+
     }
 }
 
