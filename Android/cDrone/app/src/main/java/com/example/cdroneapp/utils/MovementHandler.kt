@@ -6,24 +6,32 @@ import dji.v5.common.error.IDJIError
 import dji.v5.manager.datacenter.MediaDataCenter
 import dji.v5.manager.datacenter.media.MediaFileListState
 import com.example.cdroneapp.utils.BasicAircraftControlVM
+import dji.sdk.keyvalue.key.FlightControllerKey
+import dji.sdk.keyvalue.key.KeyTools
 import dji.sdk.keyvalue.value.common.EmptyMsg
+import dji.v5.et.action
+import dji.v5.et.create
+import dji.v5.ux.core.base.DJISDKModel
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 class MovementHandler {
     private lateinit var virtualStickVM : VirtualStickVM
-    private lateinit var basicAircraftControlVM : BasicAircraftControlVM
-    public fun init() {
+    private  var basicAircraftControlVM = BasicAircraftControlVM()
+    public fun startUpVirtualStick() {
 
         virtualStickVM = VirtualStickVM()
         virtualStickVM.init()
+        enableVS()
         //basicAircraftControlVM = BasicAircraftControlVM()
     }
-    public fun start() {
-        //virtualStickVM.listenRCStick()
-        enableVS()
+
+    public fun shutDownVirtualStick(){
+        removeListener()
+        disableVS()
     }
+
     private fun enableVS(){
         virtualStickVM.enableVirtualStick(object : CommonCallbacks.CompletionCallback {
             override fun onSuccess() {
@@ -123,34 +131,9 @@ class MovementHandler {
         virtualStickVM.setLeftPosition(0,0)
     }
 
-    fun initTakeoff() {
-        basicAircraftControlVM.startTakeOff(object :
-            CommonCallbacks.CompletionCallbackWithParam<EmptyMsg> {
-            override fun onSuccess(t: EmptyMsg?) {
-
-            }
-
-            override fun onFailure(error: IDJIError) {
-
-            }
-        })
 
 
-    }
 
-    fun initLanding() {
-        basicAircraftControlVM.startLanding(object :
-            CommonCallbacks.CompletionCallbackWithParam<EmptyMsg> {
-            override fun onSuccess(t: EmptyMsg?) {
-
-            }
-
-            override fun onFailure(error: IDJIError) {
-
-            }
-        })
-
-    }
     public fun start_yaw(){
         virtualStickVM.start_yaw(30)
     }
@@ -176,36 +159,28 @@ class MovementHandler {
             }
         })
     }
-    fun start_takeoff() {
+    public fun initTakeOff() {
         basicAircraftControlVM.startTakeOff(object :
             CommonCallbacks.CompletionCallbackWithParam<EmptyMsg> {
             override fun onSuccess(t: EmptyMsg?) {
-                GlobalScope.launch {
-                    LogHandler.log("start_takeoff done")
-                }
+                GlobalScope.launch {LogHandler.log("takeOff onSuccess")}
             }
 
             override fun onFailure(error: IDJIError) {
-                GlobalScope.launch {
-                    LogHandler.log("start_takeoff error: " + error)
-                }
+                GlobalScope.launch {LogHandler.log("takeOff onFailure, error: " + error)}
             }
         })
     }
 
-    fun start_landing() {
+    public fun initLanding() {
         basicAircraftControlVM.startLanding(object :
             CommonCallbacks.CompletionCallbackWithParam<EmptyMsg> {
             override fun onSuccess(t: EmptyMsg?) {
-                GlobalScope.launch {
-                    LogHandler.log("start_landing done")
-                }
+                GlobalScope.launch {LogHandler.log("land onSuccess")}
             }
 
             override fun onFailure(error: IDJIError) {
-                GlobalScope.launch {
-                    LogHandler.log("start_landing error: " + error)
-                }
+                GlobalScope.launch {LogHandler.log("land onFailure, error: " + error)}
             }
         })
     }
@@ -232,6 +207,28 @@ class MovementHandler {
         //virtualStickVM.clear()
     }
 
+
+    private fun startTakeOff(callback: CommonCallbacks.CompletionCallbackWithParam<EmptyMsg>) {
+        FlightControllerKey.KeyStartTakeoff.create().action({
+            callback.onSuccess(it)
+        }, { e: IDJIError ->
+            callback.onFailure(e)
+        })
+
+    }
+
+    private fun startLanding(callback: CommonCallbacks.CompletionCallbackWithParam<EmptyMsg>) {
+        FlightControllerKey.KeyStartAutoLanding.create().action({
+            callback.onSuccess(it)
+        }, { e: IDJIError ->
+            callback.onFailure(e)
+        })
+
+    }
+    private fun performLandingConfirmationAction(){
+        DJISDKModel.getInstance().performActionWithOutResult(KeyTools.createKey(FlightControllerKey.KeyConfirmLanding))
+
+    }
 
 
 }

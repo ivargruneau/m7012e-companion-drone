@@ -103,13 +103,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         liftButton.setOnClickListener{
-            //movementHandler.start_takeoff()
-            takeOff()
+            movementHandler.initTakeOff()
+            //takeOff()
 
         }
         landButton.setOnClickListener{
-            land()
-            //movementHandler.test_land()
+            //land()
+            movementHandler.initLanding()
         }
         yawLeftButton.setOnClickListener{
             movementHandler.yaw_test_start()
@@ -130,15 +130,14 @@ class MainActivity : AppCompatActivity() {
         }
         enableVSButton.setOnClickListener{
             //movementHandler.disableVS()
-            movementHandler.init()
-            movementHandler.start()
+
+            movementHandler.startUpVirtualStick()
 
         }
 
         disableVSButton.setOnClickListener{
-            //movementHandler.disableVS()
-            movementHandler.removeListener()
-            movementHandler.disableVS()
+
+            movementHandler.shutDownVirtualStick()
         }
 
         backwardButton.setOnClickListener{
