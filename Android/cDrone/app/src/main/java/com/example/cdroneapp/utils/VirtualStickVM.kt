@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
  */
 class VirtualStickVM : DJIViewModel() {
 
-    val currentSpeedLevel = MutableLiveData(0.0)
+    val currentSpeedLevel = MutableLiveData(10.0)
     var useRcStick = MutableLiveData(false)
     val currentVirtualStickStateInfo = MutableLiveData(VirtualStickStateInfo())
     private lateinit var vsListener: VirtualStickStateListener
@@ -37,15 +37,36 @@ class VirtualStickVM : DJIViewModel() {
     // RC Stick Value
     var stickValue = MutableLiveData(RCStickValue(0, 0, 0, 0))
 
-    public fun init(){
+    public fun initOld(){
         currentSpeedLevel.value = VirtualStickManager.getInstance().speedLevel
-
         VirtualStickManager.getInstance().setVirtualStickStateListener(object :
             VirtualStickStateListener {
 
             override fun onVirtualStickStateUpdate(stickState: VirtualStickState) {
                 currentVirtualStickStateInfo.postValue(currentVirtualStickStateInfo.value?.apply {
                     this.state = stickState
+                    //GlobalScope.launch {LogHandler.log("Updated stick")}
+                })
+            }
+
+            override fun onChangeReasonUpdate(reason: FlightControlAuthorityChangeReason) {
+                currentVirtualStickStateInfo.postValue(currentVirtualStickStateInfo.value?.apply {
+                    this.reason = reason
+                    //GlobalScope.launch {LogHandler.log("onChangeReasonUpdate: " + reason)}
+
+                })
+            }
+        })
+    }
+    public fun init(){
+        currentSpeedLevel.value = VirtualStickManager.getInstance().speedLevel
+        vsListener = object :
+            VirtualStickStateListener {
+
+            override fun onVirtualStickStateUpdate(stickState: VirtualStickState) {
+                currentVirtualStickStateInfo.postValue(currentVirtualStickStateInfo.value?.apply {
+                    this.state = stickState
+                    GlobalScope.launch {LogHandler.log("Updated stick")}
                 })
             }
 
@@ -56,7 +77,8 @@ class VirtualStickVM : DJIViewModel() {
 
                 })
             }
-        })
+        }
+        VirtualStickManager.getInstance().setVirtualStickStateListener(vsListener)
     }
 
     fun enableVirtualStick(callback: CommonCallbacks.CompletionCallback) {
@@ -167,5 +189,10 @@ class VirtualStickVM : DJIViewModel() {
     }
     public fun clear(){
 
+    }
+    public fun removeVSListener(){
+        //KeyManager.getInstance().cancelListen(this)
+        //VirtualStickManager.getInstance().clearAllVirtualStickStateListener()
+        VirtualStickManager.getInstance().removeVirtualStickStateListener(vsListener)
     }
 }

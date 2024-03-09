@@ -1,36 +1,34 @@
 package com.example.cdroneapp
 
-import android.app.Activity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-
-import dji.sdk.keyvalue.key.GimbalKey
-import dji.v5.common.callback.CommonCallbacks
-import dji.v5.common.error.IDJIError
-import dji.v5.manager.datacenter.media.MediaFile
+import com.example.cdroneapp.utils.BasicAircraftControlVM
 import com.example.cdroneapp.utils.GimbalHandler
 import com.example.cdroneapp.utils.LogHandler
+import com.example.cdroneapp.utils.MovementHandler
 import com.example.cdroneapp.utils.PhotoCapturer
 import com.example.cdroneapp.utils.PhotoFetcher
+import dji.sdk.keyvalue.key.FlightControllerKey
+import dji.sdk.keyvalue.key.KeyTools
+import dji.sdk.keyvalue.value.common.EmptyMsg
+import dji.v5.common.callback.CommonCallbacks
+import dji.v5.common.callback.CommonCallbacks.CompletionCallbackWithParam
+import dji.v5.common.error.IDJIError
+import dji.v5.manager.KeyManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import com.example.cdroneapp.utils.MovementHandler
-import com.example.cdroneapp.utils.BasicAircraftControlVM
-import dji.sdk.keyvalue.value.common.EmptyMsg
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var basicAircraftControlVM : BasicAircraftControlVM
     private val logTextView by lazy { findViewById<TextView>(R.id.logTextView) }
     private val uiScope = CoroutineScope(Dispatchers.Main)
-    private lateinit var logView : TextView
+    //private lateinit var logView : TextView
     private lateinit var movementHandler: MovementHandler
 
     private lateinit var forwardButton : Button
@@ -48,7 +46,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var startButton: Button
     private lateinit var panicButton : Button
 
-
+    private lateinit var enableVSButton : Button
+    private lateinit var disableVSButton : Button
     private lateinit var myApp : MyApplication
 
     private lateinit var gimbalHandler: GimbalHandler
@@ -77,7 +76,11 @@ class MainActivity : AppCompatActivity() {
         panicButton = findViewById<Button>(R.id.panic_button)
         startButton = findViewById<Button>(R.id.start_button)
 
-        logView  = findViewById<TextView>(R.id.logTextView)
+        enableVSButton = findViewById<Button>(R.id.enableVS_button)
+        disableVSButton = findViewById<Button>(R.id.disableVS_button)
+
+
+        //logView  = findViewById<TextView>(R.id.logTextView)
 
         //photoFetcher = PhotoFetcher()
         //photoFetcher.init(1000)
@@ -89,15 +92,13 @@ class MainActivity : AppCompatActivity() {
         //gimbalHandler = GimbalHandler()
         //gimbalHandler.init()
         movementHandler = MovementHandler()
-        movementHandler.init()
+
         basicAircraftControlVM = BasicAircraftControlVM()
 
         startButton.setOnClickListener {
-            movementHandler.start()
+
             //photoFetcher.start()
             //photoCapturer.start()
-
-
 
         }
 
@@ -107,22 +108,49 @@ class MainActivity : AppCompatActivity() {
 
         }
         landButton.setOnClickListener{
-            //land()
-            movementHandler.test_land()
+            land()
+            //movementHandler.test_land()
         }
         yawLeftButton.setOnClickListener{
             movementHandler.yaw_test_start()
         }
         hoverButton.setOnClickListener{
-            movementHandler.yaw_test_start()
+            movementHandler.yaw_test_stop()
         }
 
         panicButton.setOnClickListener{
             //movementHandler.disableVS()
-            movementHandler.clear()
+
         }
 
 
+        forwardButton.setOnClickListener{
+            //movementHandler.disableVS()
+
+        }
+        enableVSButton.setOnClickListener{
+            //movementHandler.disableVS()
+            movementHandler.init()
+            movementHandler.start()
+
+        }
+
+        disableVSButton.setOnClickListener{
+            //movementHandler.disableVS()
+            movementHandler.removeListener()
+            movementHandler.disableVS()
+        }
+
+        backwardButton.setOnClickListener{
+            //movementHandler.disableVS()
+            basicAircraftControlVM.performLandingConfirmationAction()
+        }
+
+        upButton.setOnClickListener{
+            //movementHandler.disableVS()
+
+
+        }
 
         //button1.setOnClickListener {
 
@@ -132,6 +160,10 @@ class MainActivity : AppCompatActivity() {
 
 
         //}
+
+
+        //是否起浆
+
 
 
 
@@ -147,7 +179,7 @@ class MainActivity : AppCompatActivity() {
     private fun observeLogs() {
         uiScope.launch {
             LogHandler.logMessages.collect { messages ->
-                logView.text = messages.joinToString("\n")
+                logTextView.text = messages.joinToString("\n")
             }
         }
     }
@@ -155,11 +187,11 @@ class MainActivity : AppCompatActivity() {
         basicAircraftControlVM.startTakeOff(object :
             CommonCallbacks.CompletionCallbackWithParam<EmptyMsg> {
             override fun onSuccess(t: EmptyMsg?) {
-
+                GlobalScope.launch {LogHandler.log("takeOff onSuccess")}
             }
 
             override fun onFailure(error: IDJIError) {
-
+                GlobalScope.launch {LogHandler.log("takeOff onFailure, error: " + error)}
             }
         })
     }
@@ -168,14 +200,15 @@ class MainActivity : AppCompatActivity() {
         basicAircraftControlVM.startLanding(object :
             CommonCallbacks.CompletionCallbackWithParam<EmptyMsg> {
             override fun onSuccess(t: EmptyMsg?) {
-
+                GlobalScope.launch {LogHandler.log("land onSuccess")}
             }
 
             override fun onFailure(error: IDJIError) {
-
+                GlobalScope.launch {LogHandler.log("land onFailure, error: " + error)}
             }
         })
     }
+
 
 
 

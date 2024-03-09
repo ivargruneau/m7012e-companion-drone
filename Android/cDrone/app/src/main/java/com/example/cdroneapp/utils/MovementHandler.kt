@@ -15,6 +15,7 @@ class MovementHandler {
     private lateinit var virtualStickVM : VirtualStickVM
     private lateinit var basicAircraftControlVM : BasicAircraftControlVM
     public fun init() {
+
         virtualStickVM = VirtualStickVM()
         virtualStickVM.init()
         //basicAircraftControlVM = BasicAircraftControlVM()
@@ -26,15 +27,11 @@ class MovementHandler {
     private fun enableVS(){
         virtualStickVM.enableVirtualStick(object : CommonCallbacks.CompletionCallback {
             override fun onSuccess() {
-                GlobalScope.launch {
-                    LogHandler.log("enableVS done")
-                }
+
             }
 
             override fun onFailure(error: IDJIError) {
-                GlobalScope.launch {
-                    LogHandler.log("enableVS error: " + error)
-                }
+
             }
         })
     }
@@ -226,15 +223,15 @@ class MovementHandler {
 
     }
     public fun clear(){
-        virtualStickVM = VirtualStickVM()
+
+        //virtualStickVM.clear()
+    }
+
+    public fun removeListener(){
+        virtualStickVM.removeVSListener()
         //virtualStickVM.clear()
     }
 
 
-    public fun test_land(){
 
-
-        virtualStickVM.setLeftPosition(0,-10)
-
-    }
 }
