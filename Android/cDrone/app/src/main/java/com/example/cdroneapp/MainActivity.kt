@@ -104,8 +104,8 @@ class MainActivity : AppCompatActivity() {
 
 
         startButton.setOnClickListener {
-            photoFetcher.start()
-            //movementHandler.startMH()
+            //photoFetcher.start()
+            movementHandler.startMH()
 
 
 
