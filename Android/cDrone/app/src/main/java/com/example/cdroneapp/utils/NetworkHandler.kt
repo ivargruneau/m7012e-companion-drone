@@ -90,8 +90,8 @@ class NetworkHandler {
 
 
 
-        GlobalScope.launch { LogHandler.log("Respons. pedD: " + pedestrianDetected + ". dist: " + distance.toString() + ". horizV: " + horizontalAngle.toString() + ". verticV: " + verticalAngle.toString())}
-
+        GlobalScope.launch { LogHandler.log("Respons. pedD: " + pedestrianDetected + ". dist: " + distance.toString() + ". horizA: " + horizontalAngle.toString() + ". verticA: " + verticalAngle.toString())}
+        movementHandler.handleDirectionsResponse(pedestrianDetected, distance, horizontalAngle, verticalAngle)
 
     }
 }

@@ -89,8 +89,9 @@ class MovementHandler {
     public fun handleDirectionsResponse(detected : Boolean, distance : Double, horizontalAngle : Double, verticalAngle : Double){
 
         if (detected) {
-            val leftStickHorizontal : Double = horizontalAngle* 1.5
-            val rightStickVertical: Double = distance* 1.5
+            val rightStickVertical: Double = distance* 12.62
+            val leftStickHorizontal : Double = horizontalAngle* 48.04
+
             performMovement(leftStickHorizontal, 0.0, 0.0, rightStickVertical )
 
 
