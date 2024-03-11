@@ -85,12 +85,13 @@ class NetworkHandler {
         val horizontalAngle = jsonObject.getDouble("horizontalAngle")
         val verticalAngle = jsonObject.getDouble("verticalAngle")
 
-        val endTime = System.currentTimeMillis()
-        val duration = endTime - startTime
+        //val endTime = System.currentTimeMillis()
+        //val duration = endTime - startTime
 
 
-        GlobalScope.launch { LogHandler.log("Execution time: $duration milliseconds")}
-        GlobalScope.launch { LogHandler.log("Respons. pedD: " + pedestrianDetected + ". dist: " + distance.toString())}
+
+        GlobalScope.launch { LogHandler.log("Respons. pedD: " + pedestrianDetected + ". dist: " + distance.toString() + ". horizV: " + horizontalAngle.toString() + ". verticV: " + verticalAngle.toString())}
+
 
     }
 }

@@ -10,13 +10,6 @@ import com.example.cdroneapp.utils.LogHandler
 import com.example.cdroneapp.utils.MovementHandler
 import com.example.cdroneapp.utils.PhotoCapturer
 import com.example.cdroneapp.utils.PhotoFetcher
-import dji.sdk.keyvalue.key.FlightControllerKey
-import dji.sdk.keyvalue.key.KeyTools
-import dji.sdk.keyvalue.value.common.EmptyMsg
-import dji.v5.common.callback.CommonCallbacks
-import dji.v5.common.callback.CommonCallbacks.CompletionCallbackWithParam
-import dji.v5.common.error.IDJIError
-import dji.v5.manager.KeyManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -33,8 +26,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var forwardButton : Button
     private lateinit var backwardButton : Button
-    private lateinit var yawRightButton : Button
     private lateinit var yawLeftButton : Button
+    private lateinit var yawRightButton : Button
 
     private lateinit var liftButton : Button
     private lateinit var landButton : Button
@@ -49,6 +42,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var enableVSButton : Button
     private lateinit var disableVSButton : Button
 
+    private lateinit var takePhotoButton: Button
     private lateinit var startCapButton : Button
     private lateinit var stopCapButton: Button
     private lateinit var myApp : MyApplication
@@ -67,8 +61,9 @@ class MainActivity : AppCompatActivity() {
 
         forwardButton = findViewById<Button>(R.id.forward_button)
         backwardButton = findViewById<Button>(R.id.backward_button)
-        yawRightButton = findViewById<Button>(R.id.yawRight_button)
         yawLeftButton = findViewById<Button>(R.id.yawLeft_button)
+        yawRightButton = findViewById<Button>(R.id.yawRight_button)
+
 
         liftButton = findViewById<Button>(R.id.lift_button)
         landButton = findViewById<Button>(R.id.land_button)
@@ -83,6 +78,7 @@ class MainActivity : AppCompatActivity() {
         enableVSButton = findViewById<Button>(R.id.enableVS_button)
         disableVSButton = findViewById<Button>(R.id.disableVS_button)
 
+        takePhotoButton = findViewById<Button>(R.id.takePhoto_button)
         startCapButton = findViewById<Button>(R.id.startCap_button)
         stopCapButton = findViewById<Button>(R.id.stopCap_button)
 
@@ -105,7 +101,7 @@ class MainActivity : AppCompatActivity() {
 
         startButton.setOnClickListener {
             //photoFetcher.start()
-            movementHandler.startMH()
+            movementHandler.startMovementHandler()
 
 
 
@@ -120,26 +116,35 @@ class MainActivity : AppCompatActivity() {
             //land()
             movementHandler.initLanding()
         }
-        yawLeftButton.setOnClickListener{
-            movementHandler.yaw_test_start()
-        }
-        hoverButton.setOnClickListener{
-            movementHandler.yaw_test_stop()
-        }
-
-        panicButton.setOnClickListener{
-            //movementHandler.disableVS()
-            movementHandler.getMotorStatus()
-
-        }
 
 
         forwardButton.setOnClickListener{
-            //movementHandler.disableVS()
+            movementHandler.moveForward()
+        }
+        backwardButton.setOnClickListener{
+            movementHandler.moveBackward()
+        }
+        yawLeftButton.setOnClickListener{
+            movementHandler.yawLeft()
+        }
+        yawRightButton.setOnClickListener{
+            movementHandler.yawRight()
+        }
+
+
+        hoverButton.setOnClickListener{
+            movementHandler.stopMovement()
+        }
+
+        panicButton.setOnClickListener{
+
+            movementHandler.stopMovement()
 
         }
+
+
+
         enableVSButton.setOnClickListener{
-            //movementHandler.disableVS()
 
             movementHandler.startUpVirtualStick()
 
@@ -150,10 +155,8 @@ class MainActivity : AppCompatActivity() {
             movementHandler.shutDownVirtualStick()
         }
 
-        backwardButton.setOnClickListener{
-            //movementHandler.disableVS()
+        takePhotoButton.setOnClickListener{
             photoCapturer.capturePhoto()
-
         }
 
         startCapButton.setOnClickListener{

@@ -194,7 +194,7 @@ class PhotoFetcher {
                 GlobalScope.launch { LogHandler.log("Download finnished") }
                 //latest_file = filepath
                 //networkHandler.sendImageToServer("1234", filepath )
-                networkHandler.timedSendImageToServer("1234", filepath )
+                networkHandler.sendImageToServer("1234", filepath )
 
 
 

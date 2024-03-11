@@ -13,6 +13,7 @@ import dji.v5.et.create
 import dji.v5.ux.core.base.DJISDKModel
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 
 class MovementHandler {
@@ -23,11 +24,15 @@ class MovementHandler {
     private var started = false
     private val desierdAltitude = 1.0
     private lateinit var photoCapturer : PhotoCapturer
-
+    private var searchModeEnabled = false
+    private val searchModeSpeed = 10
+    private val buttonMoveSpeed = 10.0
+    private val buttonYawSpeed = 10.0
+    private val moveTime : Long = 500
     public fun init(photoCapturer: PhotoCapturer) {
         this.photoCapturer = photoCapturer
     }
-    public fun startMH(){
+    public fun startMovementHandler(){
 
         if (!started) {
             started = true
@@ -36,142 +41,130 @@ class MovementHandler {
         }
     }
     public fun startUpVirtualStick() {
+        if (!vsEnabled){
+            virtualStickManager = VirtualStickManager()
+            virtualStickManager.init()
+            enableVS()
+        }
 
-        virtualStickManager = VirtualStickManager()
-        virtualStickManager.init()
-        enableVS()
 
     }
 
     public fun shutDownVirtualStick(){
-        removeListener()
-        disableVS()
+        if (vsEnabled){
+            removeListener()
+            disableVS()
+        }
+
     }
 
     private fun enableVS(){
         virtualStickManager.enableVirtualStick(object : CommonCallbacks.CompletionCallback {
             override fun onSuccess() {
                 vsEnabled = true
+                GlobalScope.launch {LogHandler.log("enableVirtualStick complete")}
             }
 
             override fun onFailure(error: IDJIError) {
+                GlobalScope.launch { LogHandler.log("enableVirtualStick error: " + error)}
+            }
+        })
+    }
 
+    private fun disableVS(){
+
+        virtualStickManager.disableVirtualStick(object : CommonCallbacks.CompletionCallback {
+            override fun onSuccess() {
+                vsEnabled = false
+                GlobalScope.launch {LogHandler.log("disableVirtualStick complete")}
+
+            }
+
+            override fun onFailure(error: IDJIError) {
+                GlobalScope.launch { LogHandler.log("disableVirtualStick error: " + error)}
             }
         })
     }
 
     public fun handleDirectionsResponse(detected : Boolean, distance : Double, horizontalAngle : Double, verticalAngle : Double){
+
         if (detected) {
-            if (horizontalAngle==-1.0){
-                virtualStickManager.setLeftPosition(30,0)
-                val currentTimeMillis = System.currentTimeMillis()
-                while (1000>currentTimeMillis){
+            val leftStickHorizontal : Double = horizontalAngle* 1.5
+            val rightStickVertical: Double = distance* 1.5
+            performMovement(leftStickHorizontal, 0.0, 0.0, rightStickVertical )
 
-                }
-                virtualStickManager.setLeftPosition(0,0)
-            }
-            else if (horizontalAngle==1.0) {
-                virtualStickManager.setLeftPosition(-30, 0)
-                val currentTimeMillis = System.currentTimeMillis()
-                while (1000>currentTimeMillis){
-
-                }
-                virtualStickManager.setLeftPosition(0,0)
-            }
-            else{
-            }
-
-            if(distance!=0.0){
-                virtualStickManager.setRightPosition(0,30)
-                val currentTimeMillis = System.currentTimeMillis()
-                while (distance*1000>currentTimeMillis){
-
-                }
-                virtualStickManager.setRightPosition(0,30)
-
-            }
 
         }
+        else {
+            photoCapturer.capturePhoto()
+        }
+
+
 
 
 
     }
 
     fun stopAll(){
-        virtualStickManager.setLeftPosition(0,0)
-        //virtualStickVM.setRightPosition(0,0)
+        if (vsEnabled) {
+            virtualStickManager.setLeftPosition(0,0)
+            virtualStickManager.setRightPosition(0,0)
+        }
     }
 
-    //Handles forward and backward movement
-    private fun move(){
-
-    }
-
-    //Handles yaw
-    private fun yaw() {
-
-    }
-
-    //Handles the cameras pitch
-    private fun pitch(){
-
-    }
 
     fun moveForward() {
-        virtualStickManager.setRightPosition(0,45)
+        //virtualStickManager.setRightPosition(0,45)
+        if (vsEnabled) {
+            performMovement(0.0, 0.0, 0.0, buttonMoveSpeed)
+        }
+
+
 
     }
 
 
     fun moveBackward () {
-        virtualStickManager.setRightPosition(0,-30)
+        //virtualStickManager.setRightPosition(0,-30)
+        if (vsEnabled) {
+            performMovement(0.0, 0.0, 0.0, -buttonMoveSpeed)
+        }
+
+
     }
 
 
-    fun moveStop() {
-        //Stops all movement (forward and backward movement)
-        virtualStickManager.setRightPosition(0,0)
-    }
+
 
 
     fun yawLeft () {
-        virtualStickManager.setLeftPosition(-30,0)
+        //virtualStickManager.setLeftPosition(-30,0)
+        if (vsEnabled) {
+            performMovement(-buttonYawSpeed, 0.0, 0.0, 0.0)
+        }
+
+
 
     }
 
 
     fun yawRight() {
-        virtualStickManager.setLeftPosition(30,0)
+        //virtualStickManager.setLeftPosition(30,0)
+        if (vsEnabled) {
+            performMovement(buttonYawSpeed, 0.0, 0.0, 0.0)
+        }
+
+
     }
 
 
-    fun yawStop() {
-        //Stops all yaw (left and right yaw movement)
-        virtualStickManager.setLeftPosition(0,0)
-    }
 
 
 
 
 
-    public fun disableVS(){
 
-        virtualStickManager.disableVirtualStick(object : CommonCallbacks.CompletionCallback {
-            override fun onSuccess() {
-                vsEnabled = false
-                GlobalScope.launch {
-                    LogHandler.log("disableVirtualStick done")
-                }
 
-            }
-
-            override fun onFailure(error: IDJIError) {
-                GlobalScope.launch {
-                    LogHandler.log("disableVirtualStick error: " + error)
-                }
-            }
-        })
-    }
     public fun initTakeOff() {
         startTakeOff(object :
             CommonCallbacks.CompletionCallbackWithParam<EmptyMsg> {
@@ -183,6 +176,14 @@ class MovementHandler {
                 GlobalScope.launch {LogHandler.log("takeOff onFailure, error: " + error)}
             }
         })
+    }
+    private fun startTakeOff(callback: CommonCallbacks.CompletionCallbackWithParam<EmptyMsg>) {
+        FlightControllerKey.KeyStartTakeoff.create().action({
+            callback.onSuccess(it)
+        }, { e: IDJIError ->
+            callback.onFailure(e)
+        })
+
     }
 
     public fun initLanding() {
@@ -197,39 +198,6 @@ class MovementHandler {
             }
         })
     }
-    public fun yaw_test_start(){
-
-
-        virtualStickManager.setLeftPosition(30,0)
-
-    }
-
-    public fun yaw_test_stop(){
-
-
-        virtualStickManager.setLeftPosition(0,0)
-
-    }
-    public fun clear(){
-
-        //virtualStickVM.clear()
-    }
-
-    public fun removeListener(){
-        virtualStickManager.removeVSListener()
-        //virtualStickVM.clear()
-    }
-
-
-    private fun startTakeOff(callback: CommonCallbacks.CompletionCallbackWithParam<EmptyMsg>) {
-        FlightControllerKey.KeyStartTakeoff.create().action({
-            callback.onSuccess(it)
-        }, { e: IDJIError ->
-            callback.onFailure(e)
-        })
-
-    }
-
     private fun startLanding(callback: CommonCallbacks.CompletionCallbackWithParam<EmptyMsg>) {
         FlightControllerKey.KeyStartAutoLanding.create().action({
             callback.onSuccess(it)
@@ -239,31 +207,65 @@ class MovementHandler {
 
     }
 
-    public fun initSearchMode() {
 
+
+
+
+    private fun removeListener(){
+        virtualStickManager.removeVSListener()
+        //virtualStickVM.clear()
     }
+
+
+
+
+
+
     private fun performLandingConfirmationAction(){
         DJISDKModel.getInstance().performActionWithOutResult(KeyTools.createKey(FlightControllerKey.KeyConfirmLanding))
 
     }
 
-    fun scheduleFreeze() {
+    private fun performMovement(leftStickHorizontal : Double, leftStickVertical : Double, rightStickHorizontal : Double, rightStickVertical: Double ) {
         // remove existing callbacks
         runnable?.let { handler?.removeCallbacks(it) }
+        if (!vsEnabled) {
+            GlobalScope.launch {LogHandler.log("Virtualstick not can not execute fun performMovement ")}
+        }
+        else {
+            var lSH : Int = leftStickHorizontal.roundToInt()
+            var lSV : Int = leftStickVertical.roundToInt()
+            var rSH : Int = rightStickHorizontal.roundToInt()
+            var rSV : Int = rightStickVertical.roundToInt()
 
-        runnable = Runnable { freezeMovement() }
+
+
+            virtualStickManager.setLeftPosition(lSH, lSV)
+            virtualStickManager.setRightPosition(rSH,rSV)
+        }
+
+
 
         // Schedule the task to freeze movement
-        runnable?.let { handler?.postDelayed(it, 2000) }
+        runnable = Runnable { stopMovement() }
+        runnable?.let { handler?.postDelayed(it, moveTime) }
 
     }
 
-    fun freezeMovement() {
-
+    fun stopMovement() {
         runnable?.let { handler?.removeCallbacks(it) }
+        if (vsEnabled) {
+            virtualStickManager.setLeftPosition(0,0)
+            virtualStickManager.setRightPosition(0,0)
+            photoCapturer.capturePhoto()
+        }
+
+
 
 
     }
+
+
     fun getHeight(): Double{
 
         var altitudeKey: DJIKey<Double> = FlightControllerKey.KeyAltitude.create()
@@ -287,14 +289,14 @@ class MovementHandler {
         runnable?.let { handler?.removeCallbacks(it) }
         var height = getHeight()
         if (height <= desierdAltitude) {
-            GlobalScope.launch { LogHandler.log("Altetude checker, if")}
+            GlobalScope.launch { LogHandler.log("Altetude checker: altitude not reached")}
             runnable = Runnable { altitudeChecker() }
 
             // Schedule the task to freeze movement
             runnable?.let { handler?.postDelayed(it, 2000) }
         }
         else {
-            GlobalScope.launch { LogHandler.log("Altetude checker. else")}
+            GlobalScope.launch { LogHandler.log("Altetude checker: altitude reached")}
             beginSearchMode()
         }
 
@@ -302,11 +304,14 @@ class MovementHandler {
 
 
     }
-    public fun beginSearchMode(){
+    private fun beginSearchMode(){
+        searchModeEnabled = true
         startUpVirtualStick()
-        photoCapturer.start()
-        virtualStickManager.setLeftPosition(30,0)
-        GlobalScope.launch { LogHandler.log("search mode comp")}
+        //photoCapturer.start()
+
+        virtualStickManager.setLeftPosition(searchModeSpeed,0)
+        GlobalScope.launch { LogHandler.log("Search mode engaged")}
+        photoCapturer.capturePhoto()
     }
 
 

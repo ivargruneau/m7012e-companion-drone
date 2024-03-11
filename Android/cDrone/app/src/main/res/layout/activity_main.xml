@@ -7,7 +7,17 @@
     tools:context=".MainActivity">
 
 
-
+    <Button
+        android:id="@+id/disableVS_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="80dp"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/square_button_background"
+        android:padding="0dp"
+        android:text="Disable VS"
+        app:layout_constraintBottom_toTopOf="@+id/panic_button"
+        app:layout_constraintStart_toStartOf="@+id/enableVS_button" />
 
     <Button
         android:id="@+id/stopCap_button"
@@ -71,22 +81,17 @@
         app:layout_constraintStart_toStartOf="parent" />
 
 
-
-
     <Button
-        android:id="@+id/disableVS_button"
+        android:id="@+id/takePhoto_button"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginStart="80dp"
-        android:layout_marginBottom="40dp"
+        android:layout_marginStart="171dp"
+        android:layout_marginBottom="80dp"
         android:background="@drawable/square_button_background"
         android:padding="0dp"
-        android:text="Disable VS"
-        app:layout_constraintBottom_toTopOf="@+id/panic_button"
-        app:layout_constraintStart_toStartOf="@+id/enableVS_button" />
-
-
-
+        android:text="Take Photo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/lift_button"
