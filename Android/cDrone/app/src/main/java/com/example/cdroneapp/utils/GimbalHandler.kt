@@ -34,12 +34,16 @@ class GimbalHandler {
         uxKeyManager = ObservableInMemoryKeyedStore.getInstance()
         gimbalFineTuneWidgetModel = GimbalFineTuneWidgetModel(djiSdkModel, uxKeyManager)
     }
-    public fun increasePitch(){
-        gimbalFineTuneWidgetModel.fineTunePosture(currentAxis, 5.0).subscribe()
+
+    public fun changePitch(pitchVal : Double){
+        gimbalFineTuneWidgetModel.fineTunePosture(currentAxis, pitchVal).subscribe()
+    }
+    public fun increasePitch(pitchVal : Double){
+        gimbalFineTuneWidgetModel.fineTunePosture(currentAxis, pitchVal).subscribe()
     }
 
-    public fun decreasePitch(){
-        gimbalFineTuneWidgetModel.fineTunePosture(currentAxis, -5.0).subscribe()
+    public fun decreasePitch(pitchVal : Double){
+        gimbalFineTuneWidgetModel.fineTunePosture(currentAxis, pitchVal).subscribe()
     }
 
     public fun  pitchOther(){

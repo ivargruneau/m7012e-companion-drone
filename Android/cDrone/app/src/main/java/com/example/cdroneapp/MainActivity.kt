@@ -45,6 +45,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var takePhotoButton: Button
     private lateinit var startCapButton : Button
     private lateinit var stopCapButton: Button
+
+    private lateinit var pitchUpButton: Button
+    private lateinit var pitchDownButton : Button
+
     private lateinit var myApp : MyApplication
 
     private lateinit var gimbalHandler: GimbalHandler
@@ -177,6 +181,17 @@ class MainActivity : AppCompatActivity() {
 
 
         }
+
+        pitchUpButton.setOnClickListener{
+            gimbalHandler.changePitch(1.0)
+
+        }
+
+        pitchDownButton.setOnClickListener{
+            gimbalHandler.changePitch(-1.0)
+
+        }
+
 
         //button1.setOnClickListener {
 

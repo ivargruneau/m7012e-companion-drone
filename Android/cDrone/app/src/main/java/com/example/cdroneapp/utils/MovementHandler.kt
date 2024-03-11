@@ -289,14 +289,14 @@ class MovementHandler {
         runnable?.let { handler?.removeCallbacks(it) }
         var height = getHeight()
         if (height <= desierdAltitude) {
-            GlobalScope.launch { LogHandler.log("Altetude checker: altitude not reached")}
+            GlobalScope.launch { LogHandler.log("Altitude checker: altitude not reached")}
             runnable = Runnable { altitudeChecker() }
 
             // Schedule the task to freeze movement
             runnable?.let { handler?.postDelayed(it, 2000) }
         }
         else {
-            GlobalScope.launch { LogHandler.log("Altetude checker: altitude reached")}
+            GlobalScope.launch { LogHandler.log("Altitude checker: altitude reached")}
             beginSearchMode()
         }
 
