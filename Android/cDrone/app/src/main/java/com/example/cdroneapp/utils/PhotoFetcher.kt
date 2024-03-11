@@ -39,7 +39,7 @@ class PhotoFetcher {
     private lateinit var networkHandler: NetworkHandler
 
 
-    fun init(intervalMillis: Long) {
+    fun init(intervalMillis: Long, movementHandler: MovementHandler) {
         this.intervalMillis = intervalMillis
         addMediaFileListStateListener()
         mediaFileListData.value = MediaDataCenter.getInstance().mediaManager.mediaFileListData
@@ -50,6 +50,7 @@ class PhotoFetcher {
             }
         }
         networkHandler = NetworkHandler()
+        networkHandler.init(movementHandler)
 
 
     }
@@ -190,17 +191,17 @@ class PhotoFetcher {
                 } catch (error: IOException) {
                     LogUtils.e("MediaFile", "close error$error")
                 }
-                GlobalScope.launch {
-                    LogHandler.log("Download finnished")
-                }
+                GlobalScope.launch { LogHandler.log("Download finnished") }
                 //latest_file = filepath
-                networkHandler.sendImageToServer("1234", filepath )
+                //networkHandler.sendImageToServer("1234", filepath )
+                networkHandler.timedSendImageToServer("1234", filepath )
 
-                LogUtils.i("MediaFile" , "${mediaFile.fileIndex }  download finish"  )
+
+
             }
 
             override fun onFailure(error: IDJIError?) {
-                LogUtils.e("MediaFile", "download error$error")
+
             }
 
         })
