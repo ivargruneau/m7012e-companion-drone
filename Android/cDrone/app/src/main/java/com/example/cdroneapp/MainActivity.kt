@@ -86,6 +86,8 @@ class MainActivity : AppCompatActivity() {
         startCapButton = findViewById<Button>(R.id.startCap_button)
         stopCapButton = findViewById<Button>(R.id.stopCap_button)
 
+        pitchUpButton = findViewById<Button>(R.id.pitchUp_button)
+        pitchDownButton = findViewById<Button>(R.id.pitchDown_button)
 
         //logView  = findViewById<TextView>(R.id.logTextView)
         movementHandler = MovementHandler()
@@ -104,7 +106,7 @@ class MainActivity : AppCompatActivity() {
 
 
         startButton.setOnClickListener {
-            //photoFetcher.start()
+
             movementHandler.startMovementHandler()
 
 
@@ -159,19 +161,17 @@ class MainActivity : AppCompatActivity() {
             movementHandler.shutDownVirtualStick()
         }
 
+
         takePhotoButton.setOnClickListener{
             photoCapturer.capturePhoto()
         }
 
         startCapButton.setOnClickListener{
-
-
+            photoFetcher.start()
         }
-
         stopCapButton.setOnClickListener{
             photoFetcher.stop()
             photoCapturer.stop()
-
         }
 
         upButton.setOnClickListener{
@@ -180,6 +180,9 @@ class MainActivity : AppCompatActivity() {
 
 
 
+        }
+        downButton.setOnClickListener{
+            movementHandler.performLandingConfirmationAction()
         }
 
         pitchUpButton.setOnClickListener{

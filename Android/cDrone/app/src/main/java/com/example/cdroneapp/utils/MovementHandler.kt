@@ -27,8 +27,8 @@ class MovementHandler {
     private var searchModeEnabled = false
     private val searchModeSpeed = 10
     private val buttonMoveSpeed = 10.0
-    private val buttonYawSpeed = 10.0
-    private val moveTime : Long = 500
+    private val buttonYawSpeed = 30.0
+    private val moveTime : Long = 2000
     public fun init(photoCapturer: PhotoCapturer) {
         this.photoCapturer = photoCapturer
     }
@@ -169,11 +169,11 @@ class MovementHandler {
         startTakeOff(object :
             CommonCallbacks.CompletionCallbackWithParam<EmptyMsg> {
             override fun onSuccess(t: EmptyMsg?) {
-                GlobalScope.launch {LogHandler.log("takeOff onSuccess")}
+                //GlobalScope.launch {LogHandler.log("takeOff onSuccess")}
             }
 
             override fun onFailure(error: IDJIError) {
-                GlobalScope.launch {LogHandler.log("takeOff onFailure, error: " + error)}
+                //GlobalScope.launch {LogHandler.log("takeOff onFailure, error: " + error)}
             }
         })
     }
@@ -190,11 +190,11 @@ class MovementHandler {
         startLanding(object :
             CommonCallbacks.CompletionCallbackWithParam<EmptyMsg> {
             override fun onSuccess(t: EmptyMsg?) {
-                GlobalScope.launch {LogHandler.log("land onSuccess")}
+                //GlobalScope.launch {LogHandler.log("land onSuccess")}
             }
 
             override fun onFailure(error: IDJIError) {
-                GlobalScope.launch {LogHandler.log("land onFailure, error: " + error)}
+                //GlobalScope.launch {LogHandler.log("land onFailure, error: " + error)}
             }
         })
     }
@@ -221,7 +221,7 @@ class MovementHandler {
 
 
 
-    private fun performLandingConfirmationAction(){
+    public fun performLandingConfirmationAction(){
         DJISDKModel.getInstance().performActionWithOutResult(KeyTools.createKey(FlightControllerKey.KeyConfirmLanding))
 
     }
