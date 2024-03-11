@@ -25,7 +25,7 @@ class MovementHandler {
     private val desierdAltitude = 1.0
     private lateinit var photoCapturer : PhotoCapturer
     private var searchModeEnabled = false
-    private val searchModeSpeed = 10
+    private val searchModeSpeed = 5
     private val buttonMoveSpeed = 10.0
     private val buttonYawSpeed = 30.0
     private val moveTime : Long = 2000
@@ -97,7 +97,10 @@ class MovementHandler {
 
         }
         else {
-            photoCapturer.capturePhoto()
+            if (vsEnabled){
+                photoCapturer.capturePhoto()
+            }
+
         }
 
 
@@ -308,6 +311,7 @@ class MovementHandler {
     private fun beginSearchMode(){
         searchModeEnabled = true
         startUpVirtualStick()
+
         //photoCapturer.start()
 
         virtualStickManager.setLeftPosition(searchModeSpeed,0)
