@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 # load yolov8 model
-
+image_name = ""
 
 # load an image
 class Detector:
@@ -15,7 +15,7 @@ class Detector:
 # Assuming results.pred contains the predictions
 # And results.names contains the class names
     def calculate_distance_and_angle(self, x_Upper, y_Upper, x_Lower, y_Lower, image):
-
+        global image_name
         image_width = image.shape[1]
         image_height = image.shape[0]
         base_distance = 10
@@ -68,14 +68,43 @@ class Detector:
         top_left_corner = (int(x_Upper), int(y_Upper)) 
         bottom_right_corner = (int(x_Lower), int(y_Lower)) 
         cv2.rectangle(image_bounding_box, top_left_corner, bottom_right_corner, (0, 0, 255), 8)
-        cv2.imwrite('./PedestrianDetection/testImages/bounding_box.jpg', image_bounding_box)
+        file_name = './PedestrianDetection/testImages/' + image_name
+
+
+
+        position = (int(optimal_box_upper_x), int(optimal_box_lower_y)+120)
+
+        font = cv2.FONT_HERSHEY_SIMPLEX
+
+
+        font_scale = 5
+
+        color = (0, 255, 255) # Yellow
+
+
+        thickness = 12
+
+
+        cv2.imwrite(file_name + '_BB.JPG' , image_bounding_box)
 
         top_left_corner = (int(optimal_box_upper_x), int(optimal_box_upper_y)) 
         bottom_right_corner = (int(optimal_box_lower_x), int(optimal_box_lower_y)) 
         cv2.rectangle(image_bounding_box, top_left_corner, bottom_right_corner, (0, 255, 255), 8)
-        cv2.imwrite('./PedestrianDetection/testImages/optimal_box.jpg', image_bounding_box)
+        cv2.imwrite(file_name + '_OB.JPG' , image_bounding_box)
+        
+        text = "distance: " + str(distance)
+        position = (int(optimal_box_upper_x), int(optimal_box_lower_y)+140)
+        cv2.putText(image_bounding_box, text, position, font, font_scale, color, thickness)
 
+        text = "horizontal angle: " + str(horizonal_angle)
+        position = (int(optimal_box_upper_x), int(optimal_box_lower_y)+(140*2))
+        cv2.putText(image_bounding_box, text, position, font, font_scale, color, thickness)
 
+        text = "verical angle: " + str(vertical_angle)
+        position = (int(optimal_box_upper_x), int(optimal_box_lower_y)+(140*3))
+        cv2.putText(image_bounding_box, text, position, font, font_scale, color, thickness)
+
+        cv2.imwrite(file_name + '_OB+calc.JPG' , image_bounding_box)
         return return_params
 
     #print(f'    x_Upper {x_Upper}. y_Upper {y_Upper} x_Lower { x_Lower}. y_Lower {y_Lower}. image_original_size {image_original_size}')
@@ -115,6 +144,7 @@ class Detector:
 def test_with_images(dir):
     import glob
     import os
+    
     directory_path = dir
 
     # Use glob.glob() to find all files ending with .JPG
@@ -133,10 +163,16 @@ def test_with_images(dir):
 #image_dir = './PedestrianDetection/testImages/'
 #test_with_images(image_dir)
 def draw_boxes():
-    image_dir = './PedestrianDetection/testImages/imgA.JPG'
+    global image_name
+    image_dir = './PedestrianDetection/testImages/'
     detector = Detector()
-    detector.detect_on_image(image_dir)
+    
     print("Drawing comp")
+    for name in ["img1", "img2", "img3", "img4", "img5", "img6"]:
+        image_name = name
+        image_file_path = image_dir+ name + ".JPG"
+        detector.detect_on_image(image_file_path)
+
 draw_boxes()
 #image = cv2.imread(image_dir+ image_names[0]+ ".JPG")
 #params = detect_on_image(image) 
