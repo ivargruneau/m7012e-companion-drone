@@ -81,20 +81,14 @@ class PhotoFetcher {
                 scheduleAtFixedRate(object : TimerTask() {
                     override fun run() {
 
-                        getMediaFromCamera(1, 1)
-                        //testPrintCounter(counter)
-                        //counter += 1
+                        getMediaFromCamera(1, 1) //should be (1,1) to only get the latest
+
                     }
                 }, 0, intervalMillis)
             }
         }
     }
-    fun testPrintCounter(c : Int) {
-        GlobalScope.launch {
-            LogHandler.log("Counter " + counter.toString())
-        }
 
-    }
 
     fun stop() {
         timer?.cancel()
@@ -102,7 +96,6 @@ class PhotoFetcher {
     }
 
 
-    //getMediaFromCamera(mediaFileIndex: Int, count: Int) should be (1,1) for the latest
     fun getMediaFromCamera(mediaFileIndex: Int, count: Int) {
         var currentTime = System.currentTimeMillis()
         MediaDataCenter.getInstance().mediaManager.pullMediaFileListFromCamera(
@@ -192,9 +185,7 @@ class PhotoFetcher {
                     LogUtils.e("MediaFile", "close error$error")
                 }
                 GlobalScope.launch { LogHandler.log("Download finnished") }
-                //latest_file = filepath
-                //networkHandler.sendImageToServer("1234", filepath )
-                networkHandler.timedSendImageToServer("1234", filepath )
+                networkHandler.sendImageToServer("1234", filepath )
 
 
 

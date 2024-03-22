@@ -12,19 +12,11 @@ import kotlin.system.measureTimeMillis
 import kotlin.system.measureNanoTime
 class NetworkHandler {
     private lateinit var movementHandler: MovementHandler
-    private var startTime by Delegates.notNull<Long>()
     fun init(movementHandler: MovementHandler) {
         this.movementHandler = movementHandler
     }
 
-    public fun timedSendImageToServer(sessionId: String, filePath: String){
-        startTime = System.currentTimeMillis()
-            // Call your function here
-        sendImageToServer(sessionId, filePath)
 
-
-
-    }
     public fun sendImageToServer(sessionId: String, filePath: String) {
         val client = OkHttpClient()
         val file = File(filePath)
@@ -42,11 +34,6 @@ class NetworkHandler {
 
         // Build the request
         val request = Request.Builder()
-            .url("http://83.233.46.128:4280/upload")
-            .post(requestBody)
-            .build()
-
-        val request2 = Request.Builder()
             .url("http://192.168.0.188:4280/upload")
             .post(requestBody)
             .build()
@@ -79,18 +66,14 @@ class NetworkHandler {
     private fun unpackageResponse(resp : String?){
         val jsonObject = JSONObject(resp)
 
-
         val pedestrianDetected = jsonObject.getBoolean("pedestrianDetected")
         val distance = jsonObject.getDouble("distance")
         val horizontalAngle = jsonObject.getDouble("horizontalAngle")
         val verticalAngle = jsonObject.getDouble("verticalAngle")
 
-        val endTime = System.currentTimeMillis()
-        val duration = endTime - startTime
 
-
-        GlobalScope.launch { LogHandler.log("Execution time: $duration milliseconds")}
-        GlobalScope.launch { LogHandler.log("Respons. pedD: " + pedestrianDetected + ". dist: " + distance.toString())}
+        GlobalScope.launch { LogHandler.log("Respons. pedD: " + pedestrianDetected + ". dist: " + distance.toString() + ". horizA: " + horizontalAngle.toString() + ". verticA: " + verticalAngle.toString())}
+        movementHandler.handleDirectionsResponse(pedestrianDetected, distance, horizontalAngle, verticalAngle)
 
     }
 }

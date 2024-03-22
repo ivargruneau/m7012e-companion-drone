@@ -10,16 +10,8 @@ import com.example.cdroneapp.utils.LogHandler
 import com.example.cdroneapp.utils.MovementHandler
 import com.example.cdroneapp.utils.PhotoCapturer
 import com.example.cdroneapp.utils.PhotoFetcher
-import dji.sdk.keyvalue.key.FlightControllerKey
-import dji.sdk.keyvalue.key.KeyTools
-import dji.sdk.keyvalue.value.common.EmptyMsg
-import dji.v5.common.callback.CommonCallbacks
-import dji.v5.common.callback.CommonCallbacks.CompletionCallbackWithParam
-import dji.v5.common.error.IDJIError
-import dji.v5.manager.KeyManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
@@ -28,13 +20,12 @@ class MainActivity : AppCompatActivity() {
 
     private val logTextView by lazy { findViewById<TextView>(R.id.logTextView) }
     private val uiScope = CoroutineScope(Dispatchers.Main)
-    //private lateinit var logView : TextView
     private lateinit var movementHandler: MovementHandler
 
     private lateinit var forwardButton : Button
     private lateinit var backwardButton : Button
-    private lateinit var yawRightButton : Button
     private lateinit var yawLeftButton : Button
+    private lateinit var yawRightButton : Button
 
     private lateinit var liftButton : Button
     private lateinit var landButton : Button
@@ -49,8 +40,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var enableVSButton : Button
     private lateinit var disableVSButton : Button
 
-    private lateinit var startCapButton : Button
+    private lateinit var takePhotoButton: Button
+    private lateinit var startFetchButton : Button
     private lateinit var stopCapButton: Button
+
+    private lateinit var pitchUpButton: Button
+    private lateinit var pitchDownButton : Button
+
     private lateinit var myApp : MyApplication
 
     private lateinit var gimbalHandler: GimbalHandler
@@ -59,16 +55,44 @@ class MainActivity : AppCompatActivity() {
     private lateinit var photoCapturer: PhotoCapturer
 
 
-    //val myApp = application as MyApplication
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         observeLogs()
 
+
+
+
+
+        movementHandler = MovementHandler()
+        photoFetcher = PhotoFetcher()
+        photoFetcher.init(1000, movementHandler)
+
+
+        photoCapturer = PhotoCapturer()
+        photoCapturer.init(1000)
+        movementHandler.init(photoCapturer)
+        myApp = application as MyApplication
+        gimbalHandler = GimbalHandler()
+        gimbalHandler.init()
+
+        setupButtons()
+        setButtonListeners()
+
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        uiScope.cancel() // Cancel the coroutine scope when the activity is destroyed
+    }
+
+    private fun setupButtons(){
         forwardButton = findViewById<Button>(R.id.forward_button)
         backwardButton = findViewById<Button>(R.id.backward_button)
-        yawRightButton = findViewById<Button>(R.id.yawRight_button)
         yawLeftButton = findViewById<Button>(R.id.yawLeft_button)
+        yawRightButton = findViewById<Button>(R.id.yawRight_button)
+
 
         liftButton = findViewById<Button>(R.id.lift_button)
         landButton = findViewById<Button>(R.id.land_button)
@@ -83,122 +107,47 @@ class MainActivity : AppCompatActivity() {
         enableVSButton = findViewById<Button>(R.id.enableVS_button)
         disableVSButton = findViewById<Button>(R.id.disableVS_button)
 
-        startCapButton = findViewById<Button>(R.id.startCap_button)
+        takePhotoButton = findViewById<Button>(R.id.takePhoto_button)
+        startFetchButton = findViewById<Button>(R.id.startFetch_button)
         stopCapButton = findViewById<Button>(R.id.stopCap_button)
 
-
-        //logView  = findViewById<TextView>(R.id.logTextView)
-        movementHandler = MovementHandler()
-        photoFetcher = PhotoFetcher()
-        photoFetcher.init(1000, movementHandler)
-
-
-        photoCapturer = PhotoCapturer()
-        photoCapturer.init(1000)
-        movementHandler.init(photoCapturer)
-        myApp = application as MyApplication
-        //gimbalHandler = GimbalHandler()
-        //gimbalHandler.init()
+        pitchUpButton = findViewById<Button>(R.id.pitchUp_button)
+        pitchDownButton = findViewById<Button>(R.id.pitchDown_button)
+    }
+    private fun setButtonListeners(){
+        forwardButton.setOnClickListener{movementHandler.moveForward()}
+        backwardButton.setOnClickListener{movementHandler.moveBackward()}
+        yawLeftButton.setOnClickListener{movementHandler.yawLeft()}
+        yawRightButton.setOnClickListener{movementHandler.yawRight()}
 
 
+        liftButton.setOnClickListener{movementHandler.initTakeOff()}
+        landButton.setOnClickListener{movementHandler.initLanding()}
+
+        upButton.setOnClickListener{movementHandler.moveUp()}
+        hoverButton.setOnClickListener{movementHandler.stopMovement()}
+        downButton.setOnClickListener{movementHandler.moveDown()}
 
 
-        startButton.setOnClickListener {
-            //photoFetcher.start()
-            movementHandler.startMH()
-
-
-
+        panicButton.setOnClickListener{movementHandler.stopMovement()}
+        startButton.setOnClickListener{
+            photoFetcher.start()
+            movementHandler.startMovementHandler()
         }
 
-        liftButton.setOnClickListener{
-            movementHandler.initTakeOff()
-            //takeOff()
+        enableVSButton.setOnClickListener{movementHandler.startUpVirtualStick()}
+        disableVSButton.setOnClickListener{movementHandler.shutDownVirtualStick()}
 
-        }
-        landButton.setOnClickListener{
-            //land()
-            movementHandler.initLanding()
-        }
-        yawLeftButton.setOnClickListener{
-            movementHandler.yaw_test_start()
-        }
-        hoverButton.setOnClickListener{
-            movementHandler.yaw_test_stop()
-        }
-
-        panicButton.setOnClickListener{
-            //movementHandler.disableVS()
-            movementHandler.getMotorStatus()
-
-        }
-
-
-        forwardButton.setOnClickListener{
-            //movementHandler.disableVS()
-
-        }
-        enableVSButton.setOnClickListener{
-            //movementHandler.disableVS()
-
-            movementHandler.startUpVirtualStick()
-
-        }
-
-        disableVSButton.setOnClickListener{
-
-            movementHandler.shutDownVirtualStick()
-        }
-
-        backwardButton.setOnClickListener{
-            //movementHandler.disableVS()
-            photoCapturer.capturePhoto()
-
-        }
-
-        startCapButton.setOnClickListener{
-
-
-        }
-
+        takePhotoButton.setOnClickListener{photoCapturer.capturePhoto()}
+        startFetchButton.setOnClickListener{photoFetcher.start()}
         stopCapButton.setOnClickListener{
             photoFetcher.stop()
             photoCapturer.stop()
-
         }
 
-        upButton.setOnClickListener{
-            //movementHandler.disableVS()
-            GlobalScope.launch { LogHandler.log("height: " + movementHandler.getHeight())}
-
-
-
-        }
-
-        //button1.setOnClickListener {
-
-            //textView1.text = myApp.getStatusMessage()
-            //mediaVM.pullMediaFileListFromCamera(-1, -1)
-
-
-
-        //}
-
-
-        //是否起浆
-
-
-
-
+        pitchUpButton.setOnClickListener{gimbalHandler.changePitch(5.0)}
+        pitchDownButton.setOnClickListener{gimbalHandler.changePitch(-5.0)}
     }
-
-
-    override fun onDestroy() {
-        super.onDestroy()
-        uiScope.cancel() // Cancel the coroutine scope when the activity is destroyed
-    }
-
-
     private fun observeLogs() {
         uiScope.launch {
             LogHandler.logMessages.collect { messages ->

@@ -34,37 +34,10 @@ class GimbalHandler {
         uxKeyManager = ObservableInMemoryKeyedStore.getInstance()
         gimbalFineTuneWidgetModel = GimbalFineTuneWidgetModel(djiSdkModel, uxKeyManager)
     }
-    public fun increasePitch(){
-        gimbalFineTuneWidgetModel.fineTunePosture(currentAxis, 5.0).subscribe()
+
+    public fun changePitch(pitchVal : Double){
+        gimbalFineTuneWidgetModel.fineTunePosture(currentAxis, pitchVal).subscribe()
     }
-
-    public fun decreasePitch(){
-        gimbalFineTuneWidgetModel.fineTunePosture(currentAxis, -5.0).subscribe()
-    }
-
-    public fun  pitchOther(){
-        gimbalFineTuneWidgetModel.fineTunePosture(currentAxis, 0.0).subscribe()
-    }
-
-
-
-
-    fun setGimbalToFree() {
-        val gimbalModeKey= GimbalKey.KeyGimbalMode // The key you've identified
-        val desiredMode = GimbalMode.FREE // The mode you want to set
-        KeyManager.getInstance().setValue(DJIKey.create(gimbalModeKey), desiredMode, object : CommonCallbacks.CompletionCallback{
-            override fun onSuccess() {
-
-            }
-
-            override fun onFailure(error: IDJIError) {
-
-
-            }
-        })
-
-    }
-
 
 
 }
