@@ -43,14 +43,14 @@
 
 
     <Button
-        android:id="@+id/startCap_button"
+        android:id="@+id/startFetch_button"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_marginStart="251dp"
         android:layout_marginBottom="0dp"
         android:background="@drawable/square_button_background"
         android:padding="0dp"
-        android:text="Start Cap"
+        android:text="Start Fetcher"
         app:layout_constraintBottom_toTopOf="@+id/stopCap_button"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -187,7 +187,7 @@
     <TextView
         android:id="@+id/logTextView"
         android:layout_width="574dp"
-        android:layout_height="26dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:scrollbars="vertical"
         android:text="Log"
@@ -205,7 +205,7 @@
         android:layout_marginTop="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/cDroneLogo" />
+        app:srcCompat="@drawable/logo" />
 
     <Button
         android:id="@+id/yawLeft_button"

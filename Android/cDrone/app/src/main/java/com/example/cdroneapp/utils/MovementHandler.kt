@@ -109,12 +109,7 @@ class MovementHandler {
 
     }
 
-    fun stopAll(){
-        if (vsEnabled) {
-            virtualStickManager.setLeftPosition(0,0)
-            virtualStickManager.setRightPosition(0,0)
-        }
-    }
+
 
 
     fun moveForward() {
@@ -156,6 +151,23 @@ class MovementHandler {
         //virtualStickManager.setLeftPosition(30,0)
         if (vsEnabled) {
             performMovement(buttonYawSpeed, 0.0, 0.0, 0.0)
+        }
+
+
+    }
+
+    fun moveUp() {
+        //virtualStickManager.setLeftPosition(0,30)
+        if (vsEnabled) {
+            performMovement(0.0, buttonMoveSpeed, 0.0, 0.0)
+        }
+
+
+    }
+    fun moveDown() {
+        //virtualStickManager.setLeftPosition(0,-30)
+        if (vsEnabled) {
+            performMovement(0.0, -buttonMoveSpeed, 0.0, 0.0)
         }
 
 
@@ -221,14 +233,6 @@ class MovementHandler {
     }
 
 
-
-
-
-
-    public fun performLandingConfirmationAction(){
-        DJISDKModel.getInstance().performActionWithOutResult(KeyTools.createKey(FlightControllerKey.KeyConfirmLanding))
-
-    }
 
     private fun performMovement(leftStickHorizontal : Double, leftStickVertical : Double, rightStickHorizontal : Double, rightStickVertical: Double ) {
         // remove existing callbacks

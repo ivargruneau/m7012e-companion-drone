@@ -16,8 +16,6 @@ class PhotoCapturer {
     private var intervalMillis: Long = 0
     private var timer: Timer? = null
 
-    // Initialization block is no longer necessary if we're directly
-    // invoking a method within the class
 
     fun init(intervalMillis: Long) {
         this.intervalMillis = intervalMillis
@@ -51,12 +49,11 @@ class PhotoCapturer {
         timer = null
     }
 
-    // Define the specific method you want to execute on each tick
+
     fun capturePhoto() {
         takePhoto(object : CommonCallbacks.CompletionCallback {
             override fun onSuccess() {
-                //sleep(1000)
-                //getMediaFromCamera(1, 1)
+
             }
 
             override fun onFailure(error: IDJIError) {

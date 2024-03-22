@@ -12,7 +12,6 @@ import com.example.cdroneapp.utils.PhotoCapturer
 import com.example.cdroneapp.utils.PhotoFetcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
@@ -21,7 +20,6 @@ class MainActivity : AppCompatActivity() {
 
     private val logTextView by lazy { findViewById<TextView>(R.id.logTextView) }
     private val uiScope = CoroutineScope(Dispatchers.Main)
-    //private lateinit var logView : TextView
     private lateinit var movementHandler: MovementHandler
 
     private lateinit var forwardButton : Button
@@ -43,7 +41,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var disableVSButton : Button
 
     private lateinit var takePhotoButton: Button
-    private lateinit var startCapButton : Button
+    private lateinit var startFetchButton : Button
     private lateinit var stopCapButton: Button
 
     private lateinit var pitchUpButton: Button
@@ -57,12 +55,39 @@ class MainActivity : AppCompatActivity() {
     private lateinit var photoCapturer: PhotoCapturer
 
 
-    //val myApp = application as MyApplication
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         observeLogs()
 
+
+
+
+
+        movementHandler = MovementHandler()
+        photoFetcher = PhotoFetcher()
+        photoFetcher.init(1000, movementHandler)
+
+
+        photoCapturer = PhotoCapturer()
+        photoCapturer.init(1000)
+        movementHandler.init(photoCapturer)
+        myApp = application as MyApplication
+        gimbalHandler = GimbalHandler()
+        gimbalHandler.init()
+
+        setupButtons()
+        setButtonListeners()
+
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        uiScope.cancel() // Cancel the coroutine scope when the activity is destroyed
+    }
+
+    private fun setupButtons(){
         forwardButton = findViewById<Button>(R.id.forward_button)
         backwardButton = findViewById<Button>(R.id.backward_button)
         yawLeftButton = findViewById<Button>(R.id.yawLeft_button)
@@ -83,141 +108,46 @@ class MainActivity : AppCompatActivity() {
         disableVSButton = findViewById<Button>(R.id.disableVS_button)
 
         takePhotoButton = findViewById<Button>(R.id.takePhoto_button)
-        startCapButton = findViewById<Button>(R.id.startCap_button)
+        startFetchButton = findViewById<Button>(R.id.startFetch_button)
         stopCapButton = findViewById<Button>(R.id.stopCap_button)
 
         pitchUpButton = findViewById<Button>(R.id.pitchUp_button)
         pitchDownButton = findViewById<Button>(R.id.pitchDown_button)
-
-        //logView  = findViewById<TextView>(R.id.logTextView)
-        movementHandler = MovementHandler()
-        photoFetcher = PhotoFetcher()
-        photoFetcher.init(1000, movementHandler)
-
-
-        photoCapturer = PhotoCapturer()
-        photoCapturer.init(1000)
-        movementHandler.init(photoCapturer)
-        myApp = application as MyApplication
-        //gimbalHandler = GimbalHandler()
-        //gimbalHandler.init()
+    }
+    private fun setButtonListeners(){
+        forwardButton.setOnClickListener{movementHandler.moveForward()}
+        backwardButton.setOnClickListener{movementHandler.moveBackward()}
+        yawLeftButton.setOnClickListener{movementHandler.yawLeft()}
+        yawRightButton.setOnClickListener{movementHandler.yawRight()}
 
 
+        liftButton.setOnClickListener{movementHandler.initTakeOff()}
+        landButton.setOnClickListener{movementHandler.initLanding()}
+
+        upButton.setOnClickListener{movementHandler.moveUp()}
+        hoverButton.setOnClickListener{movementHandler.stopMovement()}
+        downButton.setOnClickListener{movementHandler.moveDown()}
 
 
-        startButton.setOnClickListener {
+        panicButton.setOnClickListener{movementHandler.stopMovement()}
+        startButton.setOnClickListener{
             photoFetcher.start()
             movementHandler.startMovementHandler()
-
         }
 
-        liftButton.setOnClickListener{
-            movementHandler.initTakeOff()
-            //takeOff()
+        enableVSButton.setOnClickListener{movementHandler.startUpVirtualStick()}
+        disableVSButton.setOnClickListener{movementHandler.shutDownVirtualStick()}
 
-        }
-        landButton.setOnClickListener{
-            //land()
-            movementHandler.initLanding()
-        }
-
-
-        forwardButton.setOnClickListener{
-            movementHandler.moveForward()
-        }
-        backwardButton.setOnClickListener{
-            movementHandler.moveBackward()
-        }
-        yawLeftButton.setOnClickListener{
-            movementHandler.yawLeft()
-        }
-        yawRightButton.setOnClickListener{
-            movementHandler.yawRight()
-        }
-
-
-        hoverButton.setOnClickListener{
-            movementHandler.stopMovement()
-        }
-
-        panicButton.setOnClickListener{
-
-            movementHandler.stopMovement()
-
-        }
-
-
-
-        enableVSButton.setOnClickListener{
-
-            movementHandler.startUpVirtualStick()
-
-        }
-
-        disableVSButton.setOnClickListener{
-
-            movementHandler.shutDownVirtualStick()
-        }
-
-
-        takePhotoButton.setOnClickListener{
-            photoCapturer.capturePhoto()
-        }
-
-        startCapButton.setOnClickListener{
-            photoFetcher.start()
-        }
+        takePhotoButton.setOnClickListener{photoCapturer.capturePhoto()}
+        startFetchButton.setOnClickListener{photoFetcher.start()}
         stopCapButton.setOnClickListener{
             photoFetcher.stop()
             photoCapturer.stop()
         }
 
-        upButton.setOnClickListener{
-            //movementHandler.disableVS()
-            GlobalScope.launch { LogHandler.log("height: " + movementHandler.getHeight())}
-
-
-
-        }
-        downButton.setOnClickListener{
-            movementHandler.performLandingConfirmationAction()
-        }
-
-        pitchUpButton.setOnClickListener{
-            gimbalHandler.changePitch(1.0)
-
-        }
-
-        pitchDownButton.setOnClickListener{
-            gimbalHandler.changePitch(-1.0)
-
-        }
-
-
-        //button1.setOnClickListener {
-
-            //textView1.text = myApp.getStatusMessage()
-            //mediaVM.pullMediaFileListFromCamera(-1, -1)
-
-
-
-        //}
-
-
-        //是否起浆
-
-
-
-
+        pitchUpButton.setOnClickListener{gimbalHandler.changePitch(5.0)}
+        pitchDownButton.setOnClickListener{gimbalHandler.changePitch(-5.0)}
     }
-
-
-    override fun onDestroy() {
-        super.onDestroy()
-        uiScope.cancel() // Cancel the coroutine scope when the activity is destroyed
-    }
-
-
     private fun observeLogs() {
         uiScope.launch {
             LogHandler.logMessages.collect { messages ->
