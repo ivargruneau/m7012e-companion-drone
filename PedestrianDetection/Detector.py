@@ -12,8 +12,7 @@ class Detector:
 
 
 
-# Assuming results.pred contains the predictions
-# And results.names contains the class names
+
     def calculate_distance_and_angle(self, x_Upper, y_Upper, x_Lower, y_Lower, image):
         image_width = image.shape[1]
         image_height = image.shape[0]
@@ -70,9 +69,9 @@ class Detector:
         distance = 0
         horizontal_angle = 0
         vertical_angle = 0
-        results_list = self.model.predict(image) # source already setup
+        results_list = self.model.predict(image) 
 
-        for results in results_list: #Result seems to be of len 1 only
+        for results in results_list: 
             
             for result in results:
 
@@ -100,29 +99,18 @@ def test_with_images(dir):
     import os
     directory_path = dir
 
-    # Use glob.glob() to find all files ending with .JPG
+
     jpg_files = glob.glob(os.path.join(directory_path, '*.JPG'))
     m =Detector()
-    # Print the list of .JPG files
     for file in jpg_files:
-        print()
-        print()
 
-        
         params = m.detect_on_image(file)
         
-        print(f'FOR {file}. Returnd params: {params}')  
+        print(f'For {file}. Returnd params: {params}')  
 
-image_dir = './PedestrianDetection/testImages/'
-test_with_images(image_dir)
+#image_dir = './PedestrianDetection/testImages/'    # Used to run on test images
+#test_with_images(image_dir)                        # Used to run on test images
 
-#image = cv2.imread(image_dir+ image_names[0]+ ".JPG")
-#params = detect_on_image(image) 
-#print(f'returnd params: {params}')  
-#print(f'shape {image.shape[0]} dimensions')   
-# Display the image
-#cv2.imshow('Detected Objects', image)
-#cv2.waitKey(0)
-#cv2.destroyAllWindows()
+
 
 
