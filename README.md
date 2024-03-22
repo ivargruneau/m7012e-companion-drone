@@ -67,7 +67,18 @@ To set up and run the project:
 
 1. Clone the repository to your local machine.
 2. Set up the required environment and dependencies.
-3. Start the server using the provided `start_server.bat` script.
+### The Server
+3. Start the server using the provided `start_server.bat` script, run it from the root of the project.
 4. Execute the test client to simulate image uploads and interactions with the server.
 5. Monitor the server for responses and behavior.
-6. Refer to the README files within each component directory for detailed setup instructions and usage guidelines.
+### The Android Application
+3. In m7012e-companion-drone\Android\cDrone\app\src\main\res\xml\network_security_config.xml, add the IP address of the server
+3. In m7012e-companion-drone\Android\cDrone\app\src\main\java\com\example\cdroneapp\utils\NetworkHandler.kt set the URL of the request to the address of the server.
+4. Build and run the application on the controller.
+
+##Additional Notes
+1. Make sure to place the drone on the ground before turning it on.
+2. The drone sometimes refuses to land, try to land at the same place as where it took off.
+3. We had a problem with enabling `VirtualStick` when the slider on the middle of the controller was not in the middle position. 
+
+
